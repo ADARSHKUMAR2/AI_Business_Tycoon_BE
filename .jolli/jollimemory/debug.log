@@ -1,0 +1,57 @@
+[2026-09-17T14:07:20.220Z] INFO  [SkillProjection] projectActiveSkills: 0 active (0 in registry)
+[2026-09-17T14:07:20.809Z] INFO  [RepoProfile] manual-disable MIGRATE → manuallyDisabled=false (pid=58730, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, fence=none, from=legacy-marker) ←  at fY (/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist/Extension.js:115:909) | at /Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist/Extension.js:116:953 | at async Ef (/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist/Extension.js:3:5846) | at async uY (/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist/Extension.js:116:572) | at async yo (/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist/Extension.js:116:475) | at async t.refreshHookPathsIfStale (/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist/Extension.js:4021:18339)
+[2026-09-17T14:07:21.083Z] INFO  [RepoProfile] manual-disable read → false (by=migrate:legacy-marker, pid=58730, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=undefined fence=none)
+[2026-09-17T14:07:21.139Z] INFO  [StorageFactory] StorageFactory.create: route=uncutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-09-17T14:07:21.248Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:21.248Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:21.670Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-09-17T14:07:23.163Z] INFO  [StorageFactory] StorageFactory.create: route=uncutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-09-17T14:07:23.494Z] WARN  [ReadStorageResolver] createReadStorage: folder lacks index.json — falling back to orphan branch (migration incomplete, or folder wiped)
+[2026-09-17T14:07:24.292Z] INFO  [StorageFactory] StorageFactory.create: route=uncutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-09-17T14:07:24.905Z] INFO  [SchemaV5Migration] Storage backend not initialized yet — skipping schema v5 migration (no data to migrate)
+[2026-09-17T14:07:24.905Z] INFO  [activate] Schema v5 migration: alreadyDone=false fresh=true migrated=0 skipped=0
+[2026-09-17T14:07:28.555Z] INFO  [Installer] Status: enabled=false, claude=false, git=false, geminiHook=false, hermesHook=false, worktreeHooks=false, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=0, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:28.555Z] INFO  [Installer] Status: enabled=false, claude=false, git=false, geminiHook=false, hermesHook=false, worktreeHooks=false, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=0, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:28.629Z] INFO  [initialLoad] All panels loaded — updating status bar
+[2026-09-17T14:07:28.699Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:28.699Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:29.869Z] INFO  [Installer] Status: enabled=false, claude=false, git=false, geminiHook=false, hermesHook=false, worktreeHooks=false, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=0, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:30.063Z] INFO  [Installer] Status: enabled=false, claude=false, git=false, geminiHook=false, hermesHook=false, worktreeHooks=false, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=0, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:30.096Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:30.098Z] INFO  [StorageFactory] StorageFactory.create: route=uncutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-09-17T14:07:31.268Z] INFO  [Installer] Status: enabled=false, claude=false, git=false, geminiHook=false, hermesHook=false, worktreeHooks=false, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=0, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:31.311Z] INFO  [RepoProfile] manual-disable read → false (by=manuallyDisabled, pid=58730, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=none)
+[2026-09-17T14:07:31.311Z] INFO  [activate] Auto-enabling Jolli Memory (no opt-out recorded)
+[2026-09-17T14:07:31.311Z] INFO  [bridge] enable() called
+[2026-09-17T14:07:31.312Z] INFO  [Installer] Installing Jolli Memory hooks
+[2026-09-17T14:07:31.414Z] INFO  [DispatchScripts] Wrote resolve-dist-path, run-hook, and run-cli scripts to /Users/adarsh/.jolli/jollimemory
+[2026-09-17T14:07:31.415Z] INFO  [DistPathWriter] Wrote dist-paths/vscode (version=0.99.17, distDir=/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.17/dist)
+[2026-09-17T14:07:31.431Z] INFO  [SkillInstaller] Wrote SKILL.md (revision 3) to /Users/adarsh/AI_Business_Tycoon_BE/.agents/skills/jolli-recall/SKILL.md
+[2026-09-17T14:07:31.432Z] INFO  [SkillInstaller] Wrote SKILL.md (revision 3) to /Users/adarsh/AI_Business_Tycoon_BE/.agents/skills/jolli-search/SKILL.md
+[2026-09-17T14:07:31.433Z] INFO  [SkillInstaller] Wrote SKILL.md (revision 6) to /Users/adarsh/AI_Business_Tycoon_BE/.agents/skills/jolli-local-run/SKILL.md
+[2026-09-17T14:07:31.434Z] INFO  [SkillInstaller] Wrote SKILL.md (revision 5) to /Users/adarsh/AI_Business_Tycoon_BE/.agents/skills/jolli-remote-run/SKILL.md
+[2026-09-17T14:07:31.436Z] INFO  [SkillInstaller] Wrote SKILL.md (revision 9) to /Users/adarsh/AI_Business_Tycoon_BE/.agents/skills/jolli/SKILL.md
+[2026-09-17T14:07:31.595Z] INFO  [GitExclude] Updated /Users/adarsh/AI_Business_Tycoon_BE/.git/info/exclude with 8 Jolli skill exclude paths
+[2026-09-17T14:07:31.614Z] INFO  [McpRegistration] Registered MCP server in /Users/adarsh/AI_Business_Tycoon_BE/.mcp.json
+[2026-09-17T14:07:31.654Z] INFO  [JsonMcpWriter] Registered MCP server in /Users/adarsh/AI_Business_Tycoon_BE/.cursor/mcp.json
+[2026-09-17T14:07:31.668Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:31.724Z] INFO  [JsonMcpWriter] MCP server already registered in /Users/adarsh/.gemini/settings.json — no write needed
+[2026-09-17T14:07:31.747Z] INFO  [JsonMcpWriter] MCP server already registered in /Users/adarsh/Library/Application Support/Code/User/mcp.json — no write needed
+[2026-09-17T14:07:31.796Z] INFO  [JsonMcpWriter] MCP server already registered in /Users/adarsh/Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json — no write needed
+[2026-09-17T14:07:31.848Z] INFO  [JsonMcpWriter] MCP server already registered in /Users/adarsh/.config/devin/config.json — no write needed
+[2026-09-17T14:07:31.881Z] INFO  [JsonMcpWriter] MCP server already registered in /Users/adarsh/.gemini/config/mcp_config.json — no write needed
+[2026-09-17T14:07:31.926Z] INFO  [GitHookInstaller] Git post-commit hook installed
+[2026-09-17T14:07:31.941Z] INFO  [GitHookInstaller] Git post-rewrite hook installed
+[2026-09-17T14:07:31.960Z] INFO  [GitHookInstaller] Git prepare-commit-msg hook installed
+[2026-09-17T14:07:31.982Z] INFO  [GitHookInstaller] Git post-merge hook installed
+[2026-09-17T14:07:32.010Z] INFO  [GitHookInstaller] Git pre-push hook installed
+[2026-09-17T14:07:32.055Z] INFO  [GeminiHookInstaller] Gemini AfterAgent hook installed
+[2026-09-17T14:07:32.057Z] INFO  [Installer] Skipping v5 migration on vscode-extension source — Extension.ts owns it with UI
+[2026-09-17T14:07:32.058Z] INFO  [Installer] Installation complete
+[2026-09-17T14:07:32.065Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:32.590Z] INFO  [Installer] Status: enabled=false, claude=false, git=false, geminiHook=false, hermesHook=false, worktreeHooks=false, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:32.953Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:07:32.964Z] INFO  [Installer] Checking Jolli Memory status
+[2026-09-17T14:07:33.578Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=0, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-09-17T14:53:12.918Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-09-17T14:53:14.867Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}

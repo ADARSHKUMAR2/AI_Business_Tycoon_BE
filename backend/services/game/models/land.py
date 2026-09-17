@@ -42,7 +42,7 @@ class LandTile(BaseModel):
     """Represents a single land tile."""
     position: Position
     tile_type: LandType = LandType.EMPTY
-    purchase_cost: float = Field(..., gt=0, description="Cost to purchase this tile")
+    purchase_cost: float = Field(..., ge=0, description="Cost to purchase this tile")
     purchased_at: datetime = Field(default_factory=datetime.utcnow)
     business_id: Optional[str] = Field(None, description="ID of business built on this tile")
     

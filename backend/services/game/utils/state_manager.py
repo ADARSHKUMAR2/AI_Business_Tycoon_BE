@@ -49,10 +49,9 @@ class StateManager:
     async def list_all_players(self) -> List[str]:
         """List all player IDs."""
         try:
-            # Find all players and project only the player_id field
-            players = await PlayerState.find_all().project(PlayerState.player_id).to_list()
-            # The projection returns dictionaries for performance
-            return [p["player_id"] for p in players if "player_id" in p]
+            # Find all players and get their player_id
+            players = await PlayerState.find_all().to_list()
+            return [p.player_id for p in players]
         except Exception as e:
             raise StateManagerError(f"Failed to list players: {str(e)}")
 
