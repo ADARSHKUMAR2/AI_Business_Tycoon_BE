@@ -13,11 +13,11 @@ class BusinessController:
     """Controller for business-related logic."""
     
     @staticmethod
-    def create_business(data: BusinessCreate) -> Business:
+    async def create_business(data: BusinessCreate) -> Business:
         """Create a new business for a player."""
         BusinessValidator.validate_business_name(data.name)
         
-        player = state_manager.load_player(data.player_id)
+        player = await state_manager.load_player(data.player_id)
         pos = Position(x=data.position_x, y=data.position_y)
         
         BusinessValidator.validate_business_position(player, pos)
@@ -53,12 +53,12 @@ class BusinessController:
         # Add to player and save
         player.businesses.append(business)
         player.stats.businesses_owned += 1
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         
         return business
 
     @staticmethod
-    def _find_business_in_player(player: PlayerState, business_id: str) -> tuple[int, Business]:
+    async def _find_business_in_player(player: PlayerState, business_id: str) -> tuple[int, Business]:
         """Helper to find a business and its index."""
         for idx, biz in enumerate(player.businesses):
             if biz.business_id == business_id:
@@ -66,17 +66,17 @@ class BusinessController:
         raise NotFoundError("Business", business_id)
 
     @staticmethod
-    def get_business(player_id: str, business_id: str) -> Business:
+    async def get_business(player_id: str, business_id: str) -> Business:
         """Get business details."""
-        player = state_manager.load_player(player_id)
+        player = await state_manager.load_player(player_id)
         _, business = BusinessController._find_business_in_player(player, business_id)
         return business
 
     @staticmethod
-    def update_inventory(player_id: str, business_id: str, update: InventoryUpdate) -> Business:
+    async def update_inventory(player_id: str, business_id: str, update: InventoryUpdate) -> Business:
         """Update inventory stock or price."""
-        player = state_manager.load_player(player_id)
-        idx, business = BusinessController._find_business_in_player(player, business_id)
+        player = await state_manager.load_player(player_id)
+        idx, business = await BusinessController._find_business_in_player(player, business_id)
         
         BusinessValidator.validate_inventory_update(business, update.item_key)
         
@@ -98,34 +98,34 @@ class BusinessController:
         # Save state
         business.update_timestamp()
         player.businesses[idx] = business
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         
         return business
 
     @staticmethod
-    def set_price_multiplier(player_id: str, business_id: str, update: PriceUpdate) -> Business:
+    async def set_price_multiplier(player_id: str, business_id: str, update: PriceUpdate) -> Business:
         """Update global price multiplier for the business."""
-        player = state_manager.load_player(player_id)
-        idx, business = BusinessController._find_business_in_player(player, business_id)
+        player = await state_manager.load_player(player_id)
+        idx, business = await BusinessController._find_business_in_player(player, business_id)
         
         BusinessValidator.validate_price_multiplier(update.price_multiplier)
         business.price_multiplier = update.price_multiplier
         
         business.update_timestamp()
         player.businesses[idx] = business
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         
         return business
         
     @staticmethod
-    def toggle_business_status(player_id: str, business_id: str, is_open: bool) -> Business:
+    async def toggle_business_status(player_id: str, business_id: str, is_open: bool) -> Business:
         """Open or close the business."""
-        player = state_manager.load_player(player_id)
-        idx, business = BusinessController._find_business_in_player(player, business_id)
+        player = await state_manager.load_player(player_id)
+        idx, business = await BusinessController._find_business_in_player(player, business_id)
         
         business.is_open = is_open
         business.update_timestamp()
         
         player.businesses[idx] = business
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         return business

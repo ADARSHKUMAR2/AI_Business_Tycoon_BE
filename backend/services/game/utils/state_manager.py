@@ -1,136 +1,60 @@
 """
-State manager for JSON-based persistence (Phase 1).
+State manager using MongoDB (via Beanie).
 """
-import json
-import os
-from pathlib import Path
-from typing import Optional, List
-from datetime import datetime
-
+from typing import List, Optional
 from services.game.models.player import PlayerState
 from shared.exceptions import NotFoundError, StateManagerError, AlreadyExistsError
 
-
 class StateManager:
-    """Manages player state persistence using JSON files."""
+    """Manages player state persistence using MongoDB."""
     
-    def __init__(self, data_dir: str = "./data"):
-        """
-        Initialize state manager.
-        
-        Args:
-            data_dir: Directory for storing JSON files
-        """
-        self.data_dir = Path(data_dir)
-        self.data_dir.mkdir(parents=True, exist_ok=True)
-    
-    def _get_player_file_path(self, player_id: str) -> Path:
-        """Get file path for player data."""
-        return self.data_dir / f"{player_id}.json"
-    
-    def player_exists(self, player_id: str) -> bool:
+    async def player_exists(self, player_id: str) -> bool:
         """Check if player exists."""
-        return self._get_player_file_path(player_id).exists()
+        player = await PlayerState.find_one(PlayerState.player_id == player_id)
+        return player is not None
     
-    def save_player(self, player: PlayerState) -> None:
-        """
-        Save player state to JSON file.
-        
-        Args:
-            player: Player state to save
-            
-        Raises:
-            StateManagerError: If save fails
-        """
+    async def save_player(self, player: PlayerState) -> None:
+        """Save or update player state in MongoDB."""
         try:
-            file_path = self._get_player_file_path(player.player_id)
-            
-            # Update timestamp
             player.update_timestamp()
-            
-            # Convert to dict and handle datetime serialization
-            player_dict = player.model_dump(mode='json')
-            
-            # Write to file with pretty formatting
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(player_dict, f, indent=2, ensure_ascii=False)
-                
+            # Beanie's .save() handles both inserts and updates automatically
+            await player.save()
         except Exception as e:
             raise StateManagerError(f"Failed to save player {player.player_id}: {str(e)}")
     
-    def load_player(self, player_id: str) -> PlayerState:
-        """
-        Load player state from JSON file.
-        
-        Args:
-            player_id: Player ID to load
-            
-        Returns:
-            Player state
-            
-        Raises:
-            NotFoundError: If player not found
-            StateManagerError: If load fails
-        """
-        if not self.player_exists(player_id):
+    async def load_player(self, player_id: str) -> PlayerState:
+        """Load player state from MongoDB."""
+        player = await PlayerState.find_one(PlayerState.player_id == player_id)
+        if not player:
             raise NotFoundError("Player", player_id)
-        
+            
         try:
-            file_path = self._get_player_file_path(player_id)
-            
-            with open(file_path, 'r', encoding='utf-8') as f:
-                player_dict = json.load(f)
-            
-            # Parse back to PlayerState
-            player = PlayerState(**player_dict)
-            
-            # Update last login
             player.update_login()
-            
+            await player.save()  # Save the updated login time
             return player
-            
-        except NotFoundError:
-            raise
         except Exception as e:
             raise StateManagerError(f"Failed to load player {player_id}: {str(e)}")
     
-    def delete_player(self, player_id: str) -> None:
-        """
-        Delete player data.
-        
-        Args:
-            player_id: Player ID to delete
-            
-        Raises:
-            NotFoundError: If player not found
-            StateManagerError: If delete fails
-        """
-        if not self.player_exists(player_id):
+    async def delete_player(self, player_id: str) -> None:
+        """Delete player data from MongoDB."""
+        player = await PlayerState.find_one(PlayerState.player_id == player_id)
+        if not player:
             raise NotFoundError("Player", player_id)
         
         try:
-            file_path = self._get_player_file_path(player_id)
-            file_path.unlink()
+            await player.delete()
         except Exception as e:
             raise StateManagerError(f"Failed to delete player {player_id}: {str(e)}")
     
-    def list_all_players(self) -> List[str]:
-        """
-        List all player IDs.
-        
-        Returns:
-            List of player IDs
-        """
+    async def list_all_players(self) -> List[str]:
+        """List all player IDs."""
         try:
-            json_files = self.data_dir.glob("*.json")
-            return [f.stem for f in json_files]
+            # Find all players and project only the player_id field
+            players = await PlayerState.find_all().project(PlayerState.player_id).to_list()
+            # The projection returns dictionaries for performance
+            return [p["player_id"] for p in players if "player_id" in p]
         except Exception as e:
             raise StateManagerError(f"Failed to list players: {str(e)}")
-    
-    def get_player_count(self) -> int:
-        """Get total number of players."""
-        return len(self.list_all_players())
-
 
 # Global state manager instance
 state_manager = StateManager()

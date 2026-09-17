@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from services.game.routes import player_routes, business_routes, employee_routes, land_routes
 from shared.exceptions import BusinessTycoonException
+from shared.database import init_db
 import os
 
 app = FastAPI(
@@ -30,6 +31,7 @@ app.include_router(land_routes.router)
 @app.on_event("startup")
 async def startup_event():
     os.makedirs("./data", exist_ok=True)
+    await init_db()
     print("Game Service Started on Port 8002!")
 
 @app.get("/health")

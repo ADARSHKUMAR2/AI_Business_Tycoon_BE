@@ -8,7 +8,7 @@ import uuid
 
 from .land import LandTile, Position
 from .business import Business
-
+from beanie import Document
 
 class PlayerCreate(BaseModel):
     """Schema for creating a new player."""
@@ -53,7 +53,7 @@ class PlayerStats(BaseModel):
         return self.total_revenue - self.total_expenses
 
 
-class PlayerState(BaseModel):
+class PlayerState(Document):
     """Complete player state."""
     player_id: str = Field(default_factory=lambda: f"player_{uuid.uuid4().hex[:8]}")
     name: str = Field(..., min_length=2, max_length=50)
@@ -64,6 +64,10 @@ class PlayerState(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_login: datetime = Field(default_factory=datetime.utcnow)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
+
+    # We must define Settings for Beanie
+    class Settings:
+        name = "players"
     
     def calculate_net_worth(self) -> float:
         """Calculate total net worth (money + business value + land value)."""

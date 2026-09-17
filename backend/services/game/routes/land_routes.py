@@ -9,9 +9,9 @@ router = APIRouter(prefix="/land", tags=["Land"])
 @router.get("/{player_id}/available", response_model=List[Dict[str, Any]])
 async def get_available_land(player_id: str = Path(...)):
     """Get available adjacent tiles and their cost."""
-    return LandController.get_available_land(player_id)
+    return await LandController.get_available_land(player_id)
 
 @router.post("/purchase", response_model=LandTile)
 async def purchase_land(request: LandPurchaseRequest):
     """Purchase a new land tile."""
-    return LandController.purchase_land(request)
+    return await LandController.purchase_land(request)

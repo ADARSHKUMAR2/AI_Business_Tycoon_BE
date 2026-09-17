@@ -17,10 +17,10 @@ class EmployeeController:
         return EmployeeGenerator.generate_multiple_employees(count)
 
     @staticmethod
-    def hire_employee(player_id: str, business_id: str, data: EmployeeCreate) -> Employee:
+    async def hire_employee(player_id: str, business_id: str, data: EmployeeCreate) -> Employee:
         """Hire a new employee for a business."""
-        player = state_manager.load_player(player_id)
-        idx, business = BusinessController._find_business_in_player(player, business_id)
+        player = await state_manager.load_player(player_id)
+        idx, business = await BusinessController._find_business_in_player(player, business_id)
         
         # Validation
         BusinessValidator.validate_can_hire_employee(business)
@@ -41,22 +41,22 @@ class EmployeeController:
         
         # Save
         player.businesses[idx] = business
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         
         return employee
 
     @staticmethod
-    def get_employees(player_id: str, business_id: str) -> List[Employee]:
+    async def get_employees(player_id: str, business_id: str) -> List[Employee]:
         """List all employees in a business."""
-        player = state_manager.load_player(player_id)
-        _, business = BusinessController._find_business_in_player(player, business_id)
+        player = await state_manager.load_player(player_id)
+        _, business = await BusinessController._find_business_in_player(player, business_id)
         return business.employees
 
     @staticmethod
-    def fire_employee(player_id: str, business_id: str, employee_id: str) -> dict:
+    async def fire_employee(player_id: str, business_id: str, employee_id: str) -> dict:
         """Fire an employee."""
-        player = state_manager.load_player(player_id)
-        idx, business = BusinessController._find_business_in_player(player, business_id)
+        player = await state_manager.load_player(player_id)
+        idx, business = await BusinessController._find_business_in_player(player, business_id)
         
         # Find employee
         emp_idx = -1
@@ -74,6 +74,6 @@ class EmployeeController:
         
         # Save
         player.businesses[idx] = business
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         
         return {"message": f"Employee {employee_id} fired successfully"}

@@ -1,36 +1,27 @@
 """
-Database utilities (Phase 2+)
-Currently placeholder for Phase 1 (using JSON files)
+MongoDB Database initialization using Motor and Beanie.
 """
-from typing import Optional
+from motor.motor_asyncio import AsyncIOMotorClient
+from beanie import init_beanie
+import os
 
-
-class DatabaseManager:
-    """
-    Database connection manager.
-    Phase 1: Not used (JSON file storage)
-    Phase 2+: MongoDB/PostgreSQL connection
-    """
+async def init_db():
+    """Initialize MongoDB connection and Beanie ODM."""
+    mongodb_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+    db_name = os.getenv("MONGODB_DB_NAME", "ai_business_tycoon")
     
-    _instance: Optional['DatabaseManager'] = None
+    # Create Motor client
+    client = AsyncIOMotorClient(mongodb_uri)
     
-    def __init__(self):
-        # TODO: Initialize database connection in Phase 2
-        pass
+    # IMPORTANT: We must import our Beanie Document models here so Beanie knows about them
+    from services.game.models.player import PlayerState
     
-    @classmethod
-    def get_instance(cls) -> 'DatabaseManager':
-        """Get singleton instance."""
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-    
-    def connect(self):
-        """Establish database connection."""
-        # TODO: Implement in Phase 2
-        pass
-    
-    def disconnect(self):
-        """Close database connection."""
-        # TODO: Implement in Phase 2
-        pass
+    # Initialize Beanie with the target database and list of document models
+    await init_beanie(
+        database=client[db_name],
+        document_models=[
+            PlayerState,
+            # Add future document models here (e.g., GlobalMarketState)
+        ]
+    )
+    print(f"✅ Connected to MongoDB ({db_name})")

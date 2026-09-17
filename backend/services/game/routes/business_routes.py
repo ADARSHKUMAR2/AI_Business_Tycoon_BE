@@ -10,7 +10,7 @@ router = APIRouter(prefix="/business", tags=["Business"])
 @router.post("/create", response_model=Business)
 async def create_business(data: BusinessCreate):
     """Create a new business."""
-    return BusinessController.create_business(data)
+    return await BusinessController.create_business(data)
 
 @router.get("/{player_id}/{business_id}", response_model=Business)
 async def get_business(
@@ -18,7 +18,7 @@ async def get_business(
     business_id: str = Path(..., description="Business ID")
 ):
     """Get business details."""
-    return BusinessController.get_business(player_id, business_id)
+    return await BusinessController.get_business(player_id, business_id)
 
 @router.put("/{player_id}/{business_id}/inventory", response_model=Business)
 async def update_inventory(
@@ -27,7 +27,7 @@ async def update_inventory(
     business_id: str = Path(...)
 ):
     """Update business inventory (restock or change price)."""
-    return BusinessController.update_inventory(player_id, business_id, update_data)
+    return await BusinessController.update_inventory(player_id, business_id, update_data)
 
 @router.put("/{player_id}/{business_id}/price", response_model=Business)
 async def update_price_multiplier(
@@ -36,7 +36,7 @@ async def update_price_multiplier(
     business_id: str = Path(...)
 ):
     """Update business global price multiplier."""
-    return BusinessController.set_price_multiplier(player_id, business_id, update_data)
+    return await BusinessController.set_price_multiplier(player_id, business_id, update_data)
 
 @router.post("/{player_id}/{business_id}/toggle", response_model=Business)
 async def toggle_business_status(
@@ -45,4 +45,4 @@ async def toggle_business_status(
     business_id: str = Path(...)
 ):
     """Open or close the business."""
-    return BusinessController.toggle_business_status(player_id, business_id, is_open)
+    return await BusinessController.toggle_business_status(player_id, business_id, is_open)

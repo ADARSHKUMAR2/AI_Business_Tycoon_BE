@@ -9,9 +9,9 @@ class LandController:
     """Controller for land expansion."""
 
     @staticmethod
-    def get_available_land(player_id: str) -> List[dict]:
+    async def get_available_land(player_id: str) -> List[dict]:
         """Calculate and return available adjacent tiles with prices."""
-        player = state_manager.load_player(player_id)
+        player = await state_manager.load_player(player_id)
         
         owned_positions = {tile.position for tile in player.land_tiles}
         available_tiles = []
@@ -40,9 +40,9 @@ class LandController:
         return available_tiles
 
     @staticmethod
-    def purchase_land(request: LandPurchaseRequest) -> LandTile:
+    async def purchase_land(request: LandPurchaseRequest) -> LandTile:
         """Purchase a new land tile."""
-        player = state_manager.load_player(request.player_id)
+        player = await state_manager.load_player(request.player_id)
         
         PlayerValidator.validate_land_position(player, request.position)
         
@@ -66,5 +66,5 @@ class LandController:
         player.stats.land_tiles_owned += 1
         
         # Save
-        state_manager.save_player(player)
+        await state_manager.save_player(player)
         return new_tile
