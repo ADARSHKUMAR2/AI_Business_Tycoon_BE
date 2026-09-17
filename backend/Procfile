@@ -1,0 +1,3 @@
+gateway: PYTHONPATH=. uv run uvicorn gateway.main:app --host 0.0.0.0 --port 8000 --reload
+auth: PYTHONPATH=. uv run uvicorn services.auth.main:app --host 0.0.0.0 --port 8001 --reload
+game: PYTHONPATH=. uv run uvicorn services.game.main:app --host 0.0.0.0 --port 8002 --reload

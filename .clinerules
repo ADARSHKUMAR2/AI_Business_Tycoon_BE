@@ -1,0 +1,11 @@
+# AI Assistant Rules
+
+1. NO DIRECT FILE MODIFICATIONS: Never use tools to write, edit, or delete code directly in the project files. 
+2. PROVIDE CODE IN CHAT: Always output the required code blocks, file contents, or terminal commands directly in the chat interface so I can review and manually copy/paste them.
+3. DETAILED EXPLANATIONS: Whenever providing code or suggesting changes, always include a proper, detailed explanation of:
+   - What the code does.
+   - Why the specific changes or architectural decisions were made.
+   - Where exactly the code needs to be placed.
+4. PLAN FIRST: Always explain your thought process and provide a plan before giving the final code blocks.
+5. REFERENCE PROJECT DOCUMENTS: At the start of any new task or session, always use your file-reading tools to review the core project documents (`Game_Design_Document.md`, `Development_Phases.md`, `TODO.md`, and `Architecture_And_Standards.md`). Ensure all proposed code, plans, and architectural decisions strictly align with the established Game Design Document (GDD), current development phase, and coding standards.
+EOF
