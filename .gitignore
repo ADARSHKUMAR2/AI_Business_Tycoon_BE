@@ -1,0 +1,6 @@
+# Ignore Firebase private key files anywhere in the repository tree
+**/serviceAccountKey.json
+**/*.json.secret
+.env
+.env.local
+rav.yaml
