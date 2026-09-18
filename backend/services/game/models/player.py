@@ -27,12 +27,22 @@ class PlayerUpdate(BaseModel):
     """Schema for updating player data."""
     name: Optional[str] = Field(None, min_length=2, max_length=50)
     money: Optional[float] = Field(None, ge=0)
+    stats: Optional[PlayerStats] = None
     
     model_config = {
         "json_schema_extra": {
             "example": {
                 "name": "Adarsh Kumar",
-                "money": 15000.0
+                "money": 15000.0,
+                "stats": {
+                    "total_revenue": 5000.0,
+                    "total_expenses": 2000.0,
+                    "businesses_owned": 1,
+                    "employees_hired": 0,
+                    "land_tiles_owned": 1,
+                    "level": 2,
+                    "experience": 150
+                }
             }
         }
     }

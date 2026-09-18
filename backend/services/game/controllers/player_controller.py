@@ -55,6 +55,9 @@ class PlayerController:
         if update_data.money is not None:
             PlayerValidator.validate_money_amount(update_data.money)
             player.money = update_data.money
+
+        if update_data.stats is not None:
+            player.stats = update_data.stats
             
         await state_manager.save_player(player)
         return player
