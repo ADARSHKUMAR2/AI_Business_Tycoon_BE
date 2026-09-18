@@ -8,6 +8,10 @@ from typing import Dict
 class GameSettings(BaseSettings):
     """Game-specific settings loaded from environment."""
 
+    # Database configuration (These were missing!)
+    mongodb_uri: str = "mongodb://localhost:27017/"
+    mongodb_db_name: str = "ai_business_tycoon"
+
     # Starting configuration
     starting_money: float = 10000.0
     starting_land_size: int = 1
@@ -54,9 +58,11 @@ class GameSettings(BaseSettings):
         "muffin": {"name": "Blueberry Muffin", "cost": 50, "price": 130, "stock": 40},
     }
 
+    # Configuration for Pydantic
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"  # This prevents errors if your .env has other variables!
 
 
 # Global game settings instance
