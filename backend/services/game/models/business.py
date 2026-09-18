@@ -14,6 +14,8 @@ from .employee import Employee
 class BusinessType(str, Enum):
     """Types of businesses available."""
     KIRANA = "kirana"
+    PIZZA = "pizza"
+    CAFE = "cafe"
     # Future: PIZZA = "pizza", CAFE = "cafe", etc.
 
 

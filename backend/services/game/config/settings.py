@@ -7,23 +7,25 @@ from typing import Dict
 
 class GameSettings(BaseSettings):
     """Game-specific settings loaded from environment."""
-    
+
     # Starting configuration
     starting_money: float = 10000.0
     starting_land_size: int = 1
-    
+
     # Business costs
     kirana_build_cost: float = 5000.0
+    pizza_build_cost: float = 15000.0
+    cafe_build_cost: float = 25000.0
     land_tile_base_cost: float = 2000.0
-    
+
     # Employee configuration
     default_cashier_salary_min: float = 1000.0
     default_cashier_salary_max: float = 2000.0
-    
+
     # Customer configuration
     customer_spawn_interval: int = 5
     customer_base_budget: float = 100.0
-    
+
     # Inventory defaults for Kirana Store
     default_inventory_items: Dict[str, dict] = {
         "rice": {"name": "Rice (1kg)", "cost": 40, "price": 50, "stock": 100},
@@ -36,6 +38,22 @@ class GameSettings(BaseSettings):
         "tea": {"name": "Tea (250g)", "cost": 60, "price": 75, "stock": 40},
     }
     
+    # Inventory defaults for Pizza Outlet
+    pizza_inventory_items: Dict[str, dict] = {
+        "margherita": {"name": "Margherita Pizza", "cost": 120, "price": 250, "stock": 50},
+        "pepperoni": {"name": "Pepperoni Pizza", "cost": 180, "price": 350, "stock": 40},
+        "garlic_bread": {"name": "Garlic Bread", "cost": 50, "price": 120, "stock": 80},
+        "cola": {"name": "Cola (500ml)", "cost": 30, "price": 60, "stock": 100},
+    }
+    
+    # Inventory defaults for Cafe
+    cafe_inventory_items: Dict[str, dict] = {
+        "espresso": {"name": "Espresso", "cost": 40, "price": 120, "stock": 100},
+        "cappuccino": {"name": "Cappuccino", "cost": 60, "price": 180, "stock": 80},
+        "croissant": {"name": "Butter Croissant", "cost": 45, "price": 110, "stock": 50},
+        "muffin": {"name": "Blueberry Muffin", "cost": 50, "price": 130, "stock": 40},
+    }
+
     class Config:
         env_file = ".env"
         case_sensitive = False

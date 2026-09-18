@@ -21,16 +21,28 @@ class BusinessController:
         pos = Position(x=data.position_x, y=data.position_y)
         
         BusinessValidator.validate_business_position(player, pos)
-        PlayerValidator.validate_can_purchase(player, game_settings.kirana_build_cost)
+        
+        # Determine cost and inventory based on business type
+        build_cost = game_settings.kirana_build_cost
+        inventory_source = game_settings.default_inventory_items
+        
+        if data.business_type == "pizza":
+            build_cost = game_settings.pizza_build_cost
+            inventory_source = game_settings.pizza_inventory_items
+        elif data.business_type == "cafe":
+            build_cost = game_settings.cafe_build_cost
+            inventory_source = game_settings.cafe_inventory_items
+            
+        PlayerValidator.validate_can_purchase(player, build_cost)
         
         # Deduct money
-        player.deduct_money(game_settings.kirana_build_cost)
-        player.stats.total_expenses += game_settings.kirana_build_cost
+        player.deduct_money(build_cost)
+        player.stats.total_expenses += build_cost
         
         # Convert default inventory dict to InventoryItem objects
         inventory_items = {
             key: InventoryItem(**item_data) 
-            for key, item_data in game_settings.default_inventory_items.items()
+            for key, item_data in inventory_source.items()
         }
         
         # Create business
