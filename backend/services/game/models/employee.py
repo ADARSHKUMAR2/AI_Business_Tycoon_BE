@@ -4,24 +4,26 @@ Employee models for business staff management.
 from pydantic import BaseModel, Field
 from enum import Enum
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 import uuid
 
 
 class EmployeeRole(str, Enum):
-    """Employee roles available in the game. Phase 2 adds RESTOCKER."""
-    CASHIER   = "cashier"
-    RESTOCKER = "restocker"   # Phase 2: Automates shelf restocking
+    """Employee roles available in the game."""
+    CASHIER   = "cashier"    # Phase 2: Automates checkout queue
+    RESTOCKER = "restocker"  # Phase 2: Automates shelf restocking
+    CLEANER   = "cleaner"    # Phase 3: Roams store and removes trash
 
 
 class EmployeeStats(BaseModel):
     """Employee performance statistics."""
-    speed:         int = Field(..., ge=1, le=100, description="Service speed (1-100)")
-    accuracy:      int = Field(..., ge=1, le=100, description="Accuracy (1-100)")
-    customer_care: int = Field(..., ge=1, le=100, description="Customer care skill (1-100)")
+    speed:          int = Field(..., ge=1, le=100, description="Movement/service speed (1-100)")
+    accuracy:       int = Field(..., ge=1, le=100, description="Accuracy (1-100)")
+    customer_care:  int = Field(..., ge=1, le=100, description="Customer care skill (1-100)")
+    carry_capacity: int = Field(5,  ge=1, le=20,  description="Items/bags carried per trip (1-20)")
 
     def calculate_performance_score(self) -> float:
-        """Calculate overall performance score."""
+        """Calculate overall performance score (excludes carry_capacity)."""
         return (self.speed + self.accuracy + self.customer_care) / 3.0
 
 
@@ -40,6 +42,24 @@ class EmployeeCreate(BaseModel):
     }
 
 
+class EmployeeUpgradeRequest(BaseModel):
+    """
+    Request body for upgrading a specific employee stat.
+    Only 'speed' and 'carry_capacity' are upgradeable via this endpoint.
+    """
+    stat: Literal["speed", "carry_capacity"] = Field(
+        ..., description="Which stat to upgrade: 'speed' or 'carry_capacity'"
+    )
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "stat": "speed"
+            }
+        }
+    }
+
+
 class Employee(BaseModel):
     """Employee model with stats and progression."""
     employee_id:    str           = Field(default_factory=lambda: f"emp_{uuid.uuid4().hex[:8]}")
@@ -48,7 +68,7 @@ class Employee(BaseModel):
     stats:          EmployeeStats
     salary_per_day: float         = Field(..., gt=0, description="Daily salary in ₹")
     experience:     int           = Field(0,  ge=0,  description="Experience points")
-    level:          int           = Field(1,  ge=1,  le=10, description="Employee level")
+    level:          int           = Field(1,  ge=1, le=10, description="Employee level")
     hired_at:       datetime      = Field(default_factory=datetime.utcnow)
     business_id:    Optional[str] = Field(None, description="Assigned business ID")
 
@@ -72,7 +92,7 @@ class Employee(BaseModel):
                 "employee_id":    "emp_a1b2c3d4",
                 "name":           "Ravi K.",
                 "role":           "cashier",
-                "stats":          {"speed": 72, "accuracy": 91, "customer_care": 64},
+                "stats":          {"speed": 72, "accuracy": 91, "customer_care": 64, "carry_capacity": 5},
                 "salary_per_day": 1200.0,
                 "experience":     0,
                 "level":          1,
