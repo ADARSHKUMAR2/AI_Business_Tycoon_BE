@@ -15,6 +15,7 @@ from services.game.config.constants import (
     UPGRADE_SPEED_MAX,
     UPGRADE_CARRY_MAX,
 )
+from services.game.config.settings import game_settings
 from shared.exceptions import NotFoundError, InvalidOperationError
 
 
@@ -34,6 +35,19 @@ class EmployeeController:
 
         # Validation
         BusinessValidator.validate_can_hire_employee(business)
+
+        # ── Deduct money safely on the backend! ──
+        if data.role == "restocker":
+            cost = game_settings.restocker_hire_cost
+        elif data.role == "cleaner":
+            cost = game_settings.cleaner_hire_cost
+        else:
+            cost = game_settings.cashier_hire_cost
+            
+        PlayerValidator.validate_can_purchase(player, cost)
+        player.deduct_money(cost)
+        player.stats.total_expenses += cost
+        # ────────────────────────────────────────────────
 
         # Generate full employee from role + name
         employee = EmployeeGenerator.generate_employee(

@@ -34,6 +34,22 @@ class GameSettings(BaseSettings):
     customer_spawn_interval: int   = 5
     customer_base_budget:    float = 100.0
 
+    # ── Business build costs ──────────────────────────────────────────
+    kirana_build_cost:    float = 5000.0
+    pizza_build_cost:     float = 15000.0
+    cafe_build_cost:      float = 25000.0
+    land_tile_base_cost:  float = 2000.0
+
+    # ── NEW: Employee Hire Costs (Can be overridden in .env) ──────────
+    cashier_hire_cost:    float = 1000.0
+    restocker_hire_cost:  float = 1500.0
+    cleaner_hire_cost:    float = 800.0
+
+    # ── Employee salary ranges ────────────────────────────────────────
+    default_cashier_salary_min:  float = 1000.0
+    default_cashier_salary_max:  float = 2000.0
+
+
     # ── Inventory defaults for Kirana Store ───────────────────────────
     default_inventory_items: Dict[str, dict] = {
         "rice":  {"name": "Rice (1kg)",        "cost": 40,  "price": 50,  "stock": 10},
