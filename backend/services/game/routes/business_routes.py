@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Path, Query
-from typing import List
+from typing import List, Dict
 
-from services.game.models.business import Business, BusinessCreate
+from services.game.models.business import Business, BusinessCreate, TransactionBatchSync
 from services.game.models.inventory import InventoryUpdate, PriceUpdate, ShelfUpgradeRequest
 from services.game.models.trash import TrashItem, SpawnTrashRequest
 from services.game.controllers.business_controller import BusinessController
@@ -109,3 +109,15 @@ async def remove_trash(
     Returns the updated Business with the new store_rating.
     """
     return await BusinessController.remove_trash(player_id, business_id, trash_id)
+
+@router.post("/{player_id}/{business_id}/sync_transactions", response_model=Business)
+async def sync_business_transactions(
+    request:     TransactionBatchSync,
+    player_id:   str = Path(...),
+    business_id: str = Path(...),
+):
+    """
+    Called by Unity periodically to sync batched sales.
+    Deducts stock and adds revenue to the business/player.
+    """
+    return await BusinessController.sync_business_transactions(player_id, business_id, request)

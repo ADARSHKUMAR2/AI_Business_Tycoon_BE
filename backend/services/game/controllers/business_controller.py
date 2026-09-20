@@ -1,6 +1,6 @@
 from typing import List
 
-from services.game.models.business import Business, BusinessCreate
+from services.game.models.business import Business, BusinessCreate, TransactionBatchSync
 from services.game.models.player import PlayerState
 from services.game.models.inventory import InventoryItem, InventoryUpdate, PriceUpdate, ShelfUpgradeRequest
 from services.game.models.land import LandType, Position
@@ -11,7 +11,6 @@ from services.game.utils.state_manager import state_manager
 from services.game.validators.business_validator import BusinessValidator
 from services.game.validators.player_validator import PlayerValidator
 from shared.exceptions import NotFoundError, InvalidOperationError
-
 
 class BusinessController:
     """Controller for business-related logic."""
@@ -271,6 +270,52 @@ class BusinessController:
 
         item.max_stock = request.target_capacity
 
+        business.update_timestamp()
+        player.businesses[idx] = business
+        await state_manager.save_player(player)
+
+        return business
+
+    # ──────────────────────────────────────────────────────────────────
+    # Batched Transactions Sync
+    # ──────────────────────────────────────────────────────────────────
+
+    @staticmethod
+    async def sync_business_transactions(
+        player_id:   str,
+        business_id: str,
+        request:     TransactionBatchSync 
+    ) -> Business:
+        """
+        Processes a batched sync of sales from the local client.
+        Deducts sold items from inventory and adds revenue.
+        """
+        player = await state_manager.load_player(player_id)
+        idx, business = await BusinessController._find_business_in_player(player, business_id)
+
+        # 1. Process items sold
+        for item_key, quantity in request.items_sold.items():
+            if item_key in business.inventory:
+                item = business.inventory[item_key]
+                # Safely deduct stock, protecting against negatives
+                item.stock = max(0, item.stock - quantity)
+                item.total_sold += quantity
+
+        # 2. Add revenue to business stats
+        business.stats.total_revenue += request.total_revenue
+        business.stats.total_customers_served += request.total_customers_served
+        
+        # Recalculate average transaction
+        if business.stats.total_customers_served > 0:
+            business.stats.average_transaction = (
+                business.stats.total_revenue / business.stats.total_customers_served
+            )
+
+        # 3. Add money to the player's wallet
+        # Assuming player.money exists. Using += since player.deduct_money is for subtractions
+        player.money += request.total_revenue
+
+        # 4. Save state
         business.update_timestamp()
         player.businesses[idx] = business
         await state_manager.save_player(player)
