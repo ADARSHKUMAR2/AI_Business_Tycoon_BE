@@ -10,7 +10,7 @@ import uuid
 from .inventory import InventoryItem
 from .employee import Employee
 from .trash import TrashItem
-
+from .delivery import DeliverySchedule
 
 class BusinessType(str, Enum):
     """Types of businesses available."""
@@ -70,6 +70,9 @@ class Business(BaseModel):
     employees:         List[Employee]           = Field(default_factory=list)
     trash_items:       List[TrashItem]          = Field(default_factory=list,
                                                         description="Active trash on the store floor")
+    delivery_schedule: DeliverySchedule         = Field(
+                                                        default_factory=DeliverySchedule,
+                                                        description="Scheduled supply deliveries for this business")
     store_rating:      float                    = Field(5.0, ge=0.0, le=5.0,
                                                         description="Store cleanliness rating (0-5)")
     price_multiplier:  float                    = Field(1.0, gt=0, le=3.0,

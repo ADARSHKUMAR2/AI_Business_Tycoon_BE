@@ -78,6 +78,11 @@ class GameSettings(BaseSettings):
         "muffin":     {"name": "Blueberry Muffin",   "cost": 50, "price": 130, "stock": 10},
     }
 
+    # ── Phase 4: Supply delivery settings ──────────────────────────────
+    delivery_interval_minutes: int = 5
+    supply_window_seconds: int = 90
+    express_delivery_cost: float = 500.0
+
     class Config:
         env_file       = ".env"
         case_sensitive = False

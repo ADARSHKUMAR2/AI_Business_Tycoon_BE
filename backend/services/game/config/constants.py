@@ -54,6 +54,11 @@ UPGRADE_CARRY_CAP_INCREMENT = 2    # Carry capacity grows by 2 per upgrade
 UPGRADE_SPEED_MAX          = 100   # Mirrors EMPLOYEE_STAT_MAX
 UPGRADE_CARRY_MAX          = 20    # Hard ceiling on carry_capacity
 
+# ── Phase 4: Supply Delivery ───────────────────────────────────────────
+DEFAULT_DELIVERY_INTERVAL_MINUTES = 5
+DEFAULT_SUPPLY_WINDOW_SECONDS = 90
+DEFAULT_EXPRESS_DELIVERY_COST = 500.0
+
 # ── Indian names for random employee generation ───────────────────────
 INDIAN_FIRST_NAMES = [
     "Ravi", "Priya", "Amit", "Anjali", "Vikram", "Neha", "Arjun", "Pooja",
