@@ -54,6 +54,25 @@ async def toggle_business_status(
     """Open or close the business."""
     return await BusinessController.toggle_business_status(player_id, business_id, is_open)
 
+@router.post("/{player_id}/{business_id}/toggle", response_model=Business)
+async def toggle_business_status(
+    is_open:     bool = Query(..., description="True to open, False to close"),
+    player_id:   str  = Path(...),
+    business_id: str = Path(...),
+):
+    """Open or close the business."""
+    return await BusinessController.toggle_business_status(player_id, business_id, is_open)
+
+
+@router.post("/{player_id}/{business_id}/craft/{item_key}", response_model=Business)
+async def craft_restaurant_item(
+    item_key:    str = Path(..., description="Recipe output item such as burger or pizza"),
+    player_id:   str = Path(...),
+    business_id: str = Path(...),
+):
+    """Craft a restaurant item by consuming the ingredients in RESTAURANT_RECIPES."""
+    return await BusinessController.craft_restaurant_item(player_id, business_id, item_key)
+
 # ── Phase 3: Shelf Upgrades ────────────────────────────────────────────
 
 @router.post("/{player_id}/{business_id}/shelf/upgrade", response_model=Business)
@@ -121,3 +140,12 @@ async def sync_business_transactions(
     Deducts stock and adds revenue to the business/player.
     """
     return await BusinessController.sync_business_transactions(player_id, business_id, request)
+
+@router.post("/{player_id}/{business_id}/craft/{item_key}", response_model=Business)
+async def craft_restaurant_item(
+    item_key:    str = Path(..., description="Recipe output item such as burger or pizza"),
+    player_id:   str = Path(...),
+    business_id: str = Path(...),
+):
+    """Craft a restaurant item by consuming the ingredients in RESTAURANT_RECIPES."""
+    return await BusinessController.craft_restaurant_item(player_id, business_id, item_key)

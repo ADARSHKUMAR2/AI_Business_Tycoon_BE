@@ -150,6 +150,57 @@ class BusinessController:
         return business
 
     @staticmethod
+    async def craft_restaurant_item(player_id: str, business_id: str, item_key: str) -> Business:
+        """Craft a restaurant item by consuming the ingredients in RESTAURANT_RECIPES."""
+        player = await state_manager.load_player(player_id)
+        _, business = await BusinessController._find_business_in_player(player, business_id)
+
+        if business.business_type != BusinessType.RESTAURANT:
+            raise InvalidOperationError(
+                "This action is only available for restaurant businesses."
+            )
+
+        recipe_map = game_settings.RESTAURANT_RECIPES
+        if item_key not in recipe_map:
+            raise InvalidOperationError(
+                f"Item '{item_key}' is not a valid restaurant recipe. "
+                f"Available recipes: {list(recipe_map.keys())}"
+            )
+
+        required_ingredients = recipe_map[item_key]
+        for ingredient_key in required_ingredients:
+            if ingredient_key not in business.inventory:
+                raise InvalidOperationError(
+                    f"Cannot craft '{item_key}': required ingredient '{ingredient_key}' is not in this business inventory."
+                )
+            ingredient = business.inventory[ingredient_key]
+            if ingredient.stock <= 0:
+                raise InvalidOperationError(
+                    f"Cannot craft '{item_key}': ingredient '{ingredient_key}' is out of stock."
+                )
+
+        for ingredient_key in required_ingredients:
+            business.inventory[ingredient_key].stock -= 1
+
+        if item_key not in business.inventory:
+            template = game_settings.restaurant_inventory_items.get(item_key)
+            if template is None:
+                raise InvalidOperationError(
+                    f"Item '{item_key}' is missing from restaurant inventory config."
+                )
+            business.inventory[item_key] = InventoryItem(**template)
+
+        business.inventory[item_key].stock += 1
+        business.update_timestamp()
+
+        player.businesses = [
+            business if b.business_id == business.business_id else b
+            for b in player.businesses
+        ]
+        await state_manager.save_player(player)
+        return business
+
+    @staticmethod
     async def toggle_business_status(player_id: str, business_id: str, is_open: bool) -> Business:
         """Open or close the business."""
         player = await state_manager.load_player(player_id)

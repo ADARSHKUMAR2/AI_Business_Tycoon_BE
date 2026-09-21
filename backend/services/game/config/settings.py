@@ -2,7 +2,7 @@
 Game configuration and settings.
 """
 from pydantic_settings import BaseSettings
-from typing import Dict
+from typing import Dict, ClassVar
 
 
 class GameSettings(BaseSettings):
@@ -81,6 +81,29 @@ class GameSettings(BaseSettings):
         "flour":   {"name": "Flour",             "cost": 25, "price": 50, "stock": 10},
         "rice":    {"name": "Rice",              "cost": 30, "price": 55, "stock": 10},
         "herbs":   {"name": "Herbs",             "cost": 15, "price": 30, "stock": 10},
+        "burger":  {"name": "Burger",            "cost": 90, "price": 220, "stock": 10},
+        "pizza":   {"name": "Pizza",             "cost": 110, "price": 260, "stock": 10},
+    }
+
+    # ── Inventory defaults for Pizza Outlet ───────────────────────────
+    # pizza_inventory_items: Dict[str, dict] = {
+    #     # Base ingredients
+    #     "dough":       {"name": "Pizza Dough",      "cost": 30,  "price": 60,  "stock": 10},
+    #     "tomato":      {"name": "Tomato Sauce",     "cost": 20,  "price": 45,  "stock": 10},
+    #     "cheese":      {"name": "Cheese",           "cost": 35,  "price": 70,  "stock": 10},
+    #     "onion":       {"name": "Onion",            "cost": 18,  "price": 35,  "stock": 10},
+
+    #     # Final crafted items
+    #     "margherita":  {"name": "Margherita Pizza", "cost": 120, "price": 250, "stock": 10},
+    #     "pepperoni":   {"name": "Pepperoni Pizza", "cost": 180, "price": 350, "stock": 10},
+    #     "pizza":       {"name": "Custom Pizza",    "cost": 150, "price": 320, "stock": 10},
+    #     "garlic_bread":{"name": "Garlic Bread",    "cost": 50,  "price": 120, "stock": 10},
+    #     "cola":        {"name": "Cola (500ml)",    "cost": 30,  "price": 60,  "stock": 10},
+    # }
+
+    RESTAURANT_RECIPES: ClassVar[dict[str, list[str]]] = {
+        "burger": ["bread", "tomato", "onion"],
+        "pizza":  ["flour", "tomato", "onion", "herbs"],
     }
 
 
