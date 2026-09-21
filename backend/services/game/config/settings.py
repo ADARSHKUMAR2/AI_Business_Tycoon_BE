@@ -75,35 +75,29 @@ class GameSettings(BaseSettings):
 
     # ── Inventory defaults for Restaurant ───────────────────────────
     restaurant_inventory_items: Dict[str, dict] = {
-        "tomato":  {"name": "Tomato",            "cost": 20, "price": 40, "stock": 10},
-        "onion":   {"name": "Onion",             "cost": 18, "price": 35, "stock": 10},
-        "lettuce": {"name": "Lettuce",           "cost": 22, "price": 45, "stock": 10},
-        "flour":   {"name": "Flour",             "cost": 25, "price": 50, "stock": 10},
-        "rice":    {"name": "Rice",              "cost": 30, "price": 55, "stock": 10},
-        "herbs":   {"name": "Herbs",             "cost": 15, "price": 30, "stock": 10},
-        "burger":  {"name": "Burger",            "cost": 90, "price": 220, "stock": 10},
-        "pizza":   {"name": "Pizza",             "cost": 110, "price": 260, "stock": 10},
+        # Farm Ingredients (Not sellable)
+        "tomato":    {"name": "Tomato",            "cost": 20, "price": 40, "stock": 10, "is_sellable": False},
+        "onion":     {"name": "Onion",             "cost": 18, "price": 35, "stock": 10, "is_sellable": False},
+        "lettuce":   {"name": "Lettuce",           "cost": 22, "price": 45, "stock": 10, "is_sellable": False},
+        "flour":     {"name": "Flour",             "cost": 25, "price": 50, "stock": 10, "is_sellable": False},
+        "herb":      {"name": "Herb",              "cost": 15, "price": 30, "stock": 10, "is_sellable": False},
+        
+        # Kitchen Ingredients (Not sellable)
+        "buns":      {"name": "Burger Buns",       "cost": 15, "price": 30, "stock": 10, "is_sellable": False},
+        "patty":     {"name": "Burger Patty",      "cost": 40, "price": 80, "stock": 10, "is_sellable": False},
+        "cheese":    {"name": "Cheese Slice",      "cost": 10, "price": 20, "stock": 10, "is_sellable": False},
+        "dough":     {"name": "Pizza Dough",       "cost": 20, "price": 40, "stock": 10, "is_sellable": False},
+        "sauce":     {"name": "Tomato Sauce",      "cost": 15, "price": 30, "stock": 10, "is_sellable": False},
+        "pepperoni": {"name": "Pepperoni",         "cost": 30, "price": 60, "stock": 10, "is_sellable": False},
+
+        # Finished Meals (Sellable!)
+        "burger":    {"name": "Burger",            "cost": 90,  "price": 220, "stock": 10, "is_sellable": True},
+        "pizza":     {"name": "Pizza",             "cost": 110, "price": 260, "stock": 10, "is_sellable": True},
     }
 
-    # ── Inventory defaults for Pizza Outlet ───────────────────────────
-    # pizza_inventory_items: Dict[str, dict] = {
-    #     # Base ingredients
-    #     "dough":       {"name": "Pizza Dough",      "cost": 30,  "price": 60,  "stock": 10},
-    #     "tomato":      {"name": "Tomato Sauce",     "cost": 20,  "price": 45,  "stock": 10},
-    #     "cheese":      {"name": "Cheese",           "cost": 35,  "price": 70,  "stock": 10},
-    #     "onion":       {"name": "Onion",            "cost": 18,  "price": 35,  "stock": 10},
-
-    #     # Final crafted items
-    #     "margherita":  {"name": "Margherita Pizza", "cost": 120, "price": 250, "stock": 10},
-    #     "pepperoni":   {"name": "Pepperoni Pizza", "cost": 180, "price": 350, "stock": 10},
-    #     "pizza":       {"name": "Custom Pizza",    "cost": 150, "price": 320, "stock": 10},
-    #     "garlic_bread":{"name": "Garlic Bread",    "cost": 50,  "price": 120, "stock": 10},
-    #     "cola":        {"name": "Cola (500ml)",    "cost": 30,  "price": 60,  "stock": 10},
-    # }
-
     RESTAURANT_RECIPES: ClassVar[dict[str, list[str]]] = {
-        "burger": ["bread", "tomato", "onion"],
-        "pizza":  ["flour", "tomato", "onion", "herbs"],
+        "burger": ["buns", "patty", "cheese", "tomato", "lettuce"],
+        "pizza":  ["dough", "sauce", "pepperoni", "flour", "herb", "onion"],
     }
 
 

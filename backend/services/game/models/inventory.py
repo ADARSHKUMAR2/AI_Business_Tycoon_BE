@@ -13,6 +13,7 @@ class InventoryItem(BaseModel):
     stock:     int   = Field(..., ge=0, description="Current stock quantity")
     max_stock: int   = Field(10, ge=10, description="Maximum shelf capacity (10, 20, or 30)")
     total_sold: int  = Field(0, ge=0, description="Total units sold")
+    is_sellable: bool  = Field(True, description="True if customers can buy this, False for ingredients")
 
     def calculate_profit_per_unit(self) -> float:
         """Calculate profit per unit."""
@@ -30,7 +31,8 @@ class InventoryItem(BaseModel):
                 "price":      50.0,
                 "stock":      8,
                 "max_stock":  10,
-                "total_sold": 0
+                "total_sold": 0,
+                "is_sellable": True
             }
         }
     }
