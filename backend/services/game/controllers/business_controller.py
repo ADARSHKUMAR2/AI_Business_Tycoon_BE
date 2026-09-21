@@ -1,6 +1,6 @@
 from typing import List
 
-from services.game.models.business import Business, BusinessCreate, TransactionBatchSync
+from services.game.models.business import Business, BusinessCreate, BusinessType, TransactionBatchSync
 from services.game.models.player import PlayerState
 from services.game.models.inventory import InventoryItem, InventoryUpdate, PriceUpdate, ShelfUpgradeRequest
 from services.game.models.land import LandType, Position
@@ -45,12 +45,19 @@ class BusinessController:
         build_cost       = game_settings.kirana_build_cost
         inventory_source = game_settings.default_inventory_items
 
-        if data.business_type == "pizza":
-            build_cost       = game_settings.pizza_build_cost
-            inventory_source = game_settings.pizza_inventory_items
-        elif data.business_type == "cafe":
-            build_cost       = game_settings.cafe_build_cost
-            inventory_source = game_settings.cafe_inventory_items
+        match data.business_type:
+            case BusinessType.PIZZA:
+                build_cost = game_settings.pizza_build_cost
+                inventory_source = game_settings.pizza_inventory_items
+            case BusinessType.CAFE:
+                build_cost = game_settings.cafe_build_cost
+                inventory_source = game_settings.cafe_inventory_items
+            case BusinessType.RESTAURANT:
+                build_cost = game_settings.restaurant_build_cost
+                inventory_source = game_settings.restaurant_inventory_items
+            case _:
+                build_cost = game_settings.kirana_build_cost
+                inventory_source = game_settings.default_inventory_items
 
         PlayerValidator.validate_can_purchase(player, build_cost)
 

@@ -17,6 +17,7 @@ class BusinessType(str, Enum):
     KIRANA = "kirana"
     PIZZA  = "pizza"
     CAFE   = "cafe"
+    RESTAURANT = "restaurant"
 
 
 class BusinessStats(BaseModel):

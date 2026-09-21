@@ -21,6 +21,7 @@ class GameSettings(BaseSettings):
     pizza_build_cost:     float = 15000.0
     cafe_build_cost:      float = 25000.0
     land_tile_base_cost:  float = 2000.0
+    restaurant_build_cost: float = 18000.0
 
     # ── Employee salary ranges ────────────────────────────────────────
     default_cashier_salary_min:  float = 1000.0
@@ -33,12 +34,6 @@ class GameSettings(BaseSettings):
     # ── Customer configuration ────────────────────────────────────────
     customer_spawn_interval: int   = 5
     customer_base_budget:    float = 100.0
-
-    # ── Business build costs ──────────────────────────────────────────
-    kirana_build_cost:    float = 5000.0
-    pizza_build_cost:     float = 15000.0
-    cafe_build_cost:      float = 25000.0
-    land_tile_base_cost:  float = 2000.0
 
     # ── NEW: Employee Hire Costs (Can be overridden in .env) ──────────
     cashier_hire_cost:    float = 1000.0
@@ -77,6 +72,17 @@ class GameSettings(BaseSettings):
         "croissant":  {"name": "Butter Croissant",   "cost": 45, "price": 110, "stock": 10},
         "muffin":     {"name": "Blueberry Muffin",   "cost": 50, "price": 130, "stock": 10},
     }
+
+    # ── Inventory defaults for Restaurant ───────────────────────────
+    restaurant_inventory_items: Dict[str, dict] = {
+        "tomato":  {"name": "Tomato",            "cost": 20, "price": 40, "stock": 10},
+        "onion":   {"name": "Onion",             "cost": 18, "price": 35, "stock": 10},
+        "lettuce": {"name": "Lettuce",           "cost": 22, "price": 45, "stock": 10},
+        "flour":   {"name": "Flour",             "cost": 25, "price": 50, "stock": 10},
+        "rice":    {"name": "Rice",              "cost": 30, "price": 55, "stock": 10},
+        "herbs":   {"name": "Herbs",             "cost": 15, "price": 30, "stock": 10},
+    }
+
 
     # ── Phase 4: Supply delivery settings ──────────────────────────────
     delivery_interval_minutes: int = 5

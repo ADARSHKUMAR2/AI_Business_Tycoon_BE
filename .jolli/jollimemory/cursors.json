@@ -20,6 +20,31 @@
 			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1789821274083_1kzrc/1789821274083_1kzrc.messages.json",
 			"lineNumber": 193,
 			"updatedAt": "2026-09-20T09:10:08.432Z"
+		},
+		"/Users/adarsh/.cline/data/sessions/1789901948853_6xsug/1789901948853_6xsug.messages.json": {
+			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1789901948853_6xsug/1789901948853_6xsug.messages.json",
+			"lineNumber": 183,
+			"updatedAt": "2026-09-21T11:20:16.058Z"
+		},
+		"/Users/adarsh/.cline/data/sessions/1789967252129_dy3lx/1789967252129_dy3lx.messages.json": {
+			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1789967252129_dy3lx/1789967252129_dy3lx.messages.json",
+			"lineNumber": 132,
+			"updatedAt": "2026-09-21T11:20:16.065Z"
+		},
+		"/Users/adarsh/.cline/data/sessions/1789976671067_yqgsg/1789976671067_yqgsg.messages.json": {
+			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1789976671067_yqgsg/1789976671067_yqgsg.messages.json",
+			"lineNumber": 244,
+			"updatedAt": "2026-09-21T11:20:16.072Z"
+		},
+		"/Users/adarsh/.cline/data/sessions/1789977207548_k3mwa/1789977207548_k3mwa.messages.json": {
+			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1789977207548_k3mwa/1789977207548_k3mwa.messages.json",
+			"lineNumber": 19,
+			"updatedAt": "2026-09-21T11:20:16.074Z"
+		},
+		"/Users/adarsh/.cline/data/sessions/1789977376237_e42hd/1789977376237_e42hd.messages.json": {
+			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1789977376237_e42hd/1789977376237_e42hd.messages.json",
+			"lineNumber": 2,
+			"updatedAt": "2026-09-21T11:20:16.075Z"
 		}
 	}
 }
