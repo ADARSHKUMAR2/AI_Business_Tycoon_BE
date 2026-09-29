@@ -1,5 +1,12 @@
 from fastapi import FastAPI
-from services.game.routes import player_routes, business_routes, employee_routes, land_routes, delivery_routes
+from services.game.routes import (
+    player_routes,
+    business_routes,
+    employee_routes,
+    land_routes,
+    delivery_routes,
+    world_state_routes,
+)
 from shared.exceptions import BusinessTycoonException
 from shared.database import init_db
 import os
@@ -28,6 +35,7 @@ app.include_router(business_routes.router)
 app.include_router(employee_routes.router)
 app.include_router(land_routes.router)
 app.include_router(delivery_routes.router)
+app.include_router(world_state_routes.router)
 
 @app.on_event("startup")
 async def startup_event():
