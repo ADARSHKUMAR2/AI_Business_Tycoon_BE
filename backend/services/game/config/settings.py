@@ -75,24 +75,24 @@ class GameSettings(BaseSettings):
 
     # ── Inventory defaults for Restaurant ───────────────────────────
     restaurant_inventory_items: Dict[str, dict] = {
-        # Farm Ingredients (Not sellable)
-        "tomato":    {"name": "Tomato",            "cost": 20, "price": 40, "stock": 10, "is_sellable": False},
-        "onion":     {"name": "Onion",             "cost": 18, "price": 35, "stock": 10, "is_sellable": False},
-        "lettuce":   {"name": "Lettuce",           "cost": 22, "price": 45, "stock": 10, "is_sellable": False},
-        "flour":     {"name": "Flour",             "cost": 25, "price": 50, "stock": 10, "is_sellable": False},
-        "herb":      {"name": "Herb",              "cost": 15, "price": 30, "stock": 10, "is_sellable": False},
+        # Farm Ingredients (Not sellable, delivered via supply zone)
+        "tomato":    {"name": "Tomato",            "cost": 20, "price": 40, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "onion":     {"name": "Onion",             "cost": 18, "price": 35, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "lettuce":   {"name": "Lettuce",           "cost": 22, "price": 45, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "flour":     {"name": "Flour",             "cost": 25, "price": 50, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "herb":      {"name": "Herb",              "cost": 15, "price": 30, "stock": 10, "is_sellable": False, "has_supply_zone": True},
         
-        # Kitchen Ingredients (Not sellable)
-        "buns":      {"name": "Burger Buns",       "cost": 15, "price": 30, "stock": 10, "is_sellable": False},
-        "patty":     {"name": "Burger Patty",      "cost": 40, "price": 80, "stock": 10, "is_sellable": False},
-        "cheese":    {"name": "Cheese Slice",      "cost": 10, "price": 20, "stock": 10, "is_sellable": False},
-        "dough":     {"name": "Pizza Dough",       "cost": 20, "price": 40, "stock": 10, "is_sellable": False},
-        "sauce":     {"name": "Tomato Sauce",      "cost": 15, "price": 30, "stock": 10, "is_sellable": False},
-        "pepperoni": {"name": "Pepperoni",         "cost": 30, "price": 60, "stock": 10, "is_sellable": False},
+        # Kitchen Ingredients (Not sellable, delivered via supply zone)
+        "buns":      {"name": "Burger Buns",       "cost": 15, "price": 30, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "patty":     {"name": "Burger Patty",      "cost": 40, "price": 80, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "cheese":    {"name": "Cheese Slice",      "cost": 10, "price": 20, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "dough":     {"name": "Pizza Dough",       "cost": 20, "price": 40, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "sauce":     {"name": "Tomato Sauce",      "cost": 15, "price": 30, "stock": 10, "is_sellable": False, "has_supply_zone": True},
+        "pepperoni": {"name": "Pepperoni",         "cost": 30, "price": 60, "stock": 10, "is_sellable": False, "has_supply_zone": True},
 
-        # Finished Meals (Sellable!)
-        "burger":    {"name": "Burger",            "cost": 90,  "price": 220, "stock": 10, "is_sellable": True},
-        "pizza":     {"name": "Pizza",             "cost": 110, "price": 260, "stock": 10, "is_sellable": True},
+        # Finished Meals (Sellable, crafted — no supply zone)
+        "burger":    {"name": "Burger",            "cost": 90,  "price": 220, "stock": 10, "is_sellable": True, "has_supply_zone": False},
+        "pizza":     {"name": "Pizza",             "cost": 110, "price": 260, "stock": 10, "is_sellable": True, "has_supply_zone": False},
     }
 
     RESTAURANT_RECIPES: ClassVar[dict[str, list[str]]] = {
