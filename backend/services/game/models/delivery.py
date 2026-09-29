@@ -5,6 +5,7 @@ This keeps the server authoritative for stock restock timing.
 
 from datetime import datetime, timedelta
 from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -45,6 +46,10 @@ class DeliverySchedule(BaseModel):
     is_active: bool = Field(
         True,
         description="Whether delivery system is enabled for this business"
+    )
+    processed_express_delivery_keys: list[str] = Field(
+        default_factory=list,
+        description="Idempotency keys for completed express deliveries"
     )
 
     def mark_delivered(self, now: Optional[datetime] = None) -> None:
@@ -106,5 +111,5 @@ class DeliveryStatusResponse(BaseModel):
 
 
 class ExpressDeliveryRequest(BaseModel):
-    """Optional future extension — currently not required for immediate logic."""
-    pass
+    """Client-generated key used to make express delivery retries safe."""
+    idempotency_key: str = Field(..., min_length=1, max_length=128)

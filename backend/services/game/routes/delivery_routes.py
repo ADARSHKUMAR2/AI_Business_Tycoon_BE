@@ -6,7 +6,7 @@ from fastapi import APIRouter, Path
 
 from services.game.controllers.delivery_controller import DeliveryController
 from services.game.models.business import Business
-from services.game.models.delivery import DeliveryStatusResponse
+from services.game.models.delivery import DeliveryStatusResponse, ExpressDeliveryRequest
 
 router = APIRouter(prefix="/delivery", tags=["Delivery"])
 
@@ -41,7 +41,10 @@ async def trigger_manual_restock(
     summary="Pay to trigger immediate supply delivery"
 )
 async def request_express_delivery(
+    request: ExpressDeliveryRequest,
     player_id: str = Path(..., description="Player ID"),
     business_id: str = Path(..., description="Business ID"),
 ):
-    return await DeliveryController.request_express_delivery(player_id, business_id)
+    return await DeliveryController.request_express_delivery(
+        player_id, business_id, request.idempotency_key
+    )

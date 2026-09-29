@@ -1,6 +1,5 @@
 # AI Assistant Rules
 
-1. NO DIRECT FILE MODIFICATIONS: Never use tools to write, edit, or delete code directly in the project files. 
 2. PROVIDE CODE IN CHAT: Always output the required code blocks, file contents, or terminal commands directly in the chat interface so I can review and manually copy/paste them.
 3. DETAILED EXPLANATIONS: Whenever providing code or suggesting changes, always include a proper, detailed explanation of:
    - What the code does.
