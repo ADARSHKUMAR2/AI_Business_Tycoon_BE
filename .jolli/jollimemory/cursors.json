@@ -68,8 +68,13 @@
 		},
 		"/Users/adarsh/.cline/data/sessions/1790661896586_jkih8/1790661896586_jkih8.messages.json": {
 			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1790661896586_jkih8/1790661896586_jkih8.messages.json",
-			"lineNumber": 558,
-			"updatedAt": "2026-09-29T11:12:56.881Z"
+			"lineNumber": 877,
+			"updatedAt": "2026-09-30T09:52:04.956Z"
+		},
+		"/Users/adarsh/.cline/data/sessions/1790754677415_rwm2z/1790754677415_rwm2z.messages.json": {
+			"transcriptPath": "/Users/adarsh/.cline/data/sessions/1790754677415_rwm2z/1790754677415_rwm2z.messages.json",
+			"lineNumber": 189,
+			"updatedAt": "2026-09-30T09:52:04.960Z"
 		}
 	}
 }

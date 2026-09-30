@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Path
+from typing import Optional
 from services.game.models.events import FranchiseEvent, EventCreate, EventResponse
 from services.game.controllers.event_controller import EventController
 
@@ -9,7 +10,7 @@ async def create_event(data: EventCreate):
     """ADMIN ONLY: Create a new franchise tournament."""
     return await EventController.create_event(data)
 
-@router.get("/active", response_model=EventResponse)
+@router.get("/active", response_model=Optional[EventResponse])
 async def get_active_event(player_id: str = None):
     """Get the current active or upcoming event. Pass player_id to check registration status."""
     return await EventController.get_active_event(player_id)
