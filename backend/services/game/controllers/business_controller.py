@@ -11,6 +11,9 @@ from services.game.utils.state_manager import state_manager
 from services.game.validators.business_validator import BusinessValidator
 from services.game.validators.player_validator import PlayerValidator
 from shared.exceptions import NotFoundError, InvalidOperationError
+from services.game.services.realtime_event_hub import realtime_event_hub
+from services.game.controllers.event_controller import EventController
+from services.game.models.events import FranchiseEvent, EventStatus
 
 class BusinessController:
     """Controller for business-related logic."""
@@ -146,6 +149,10 @@ class BusinessController:
         business.update_timestamp()
         player.businesses[idx] = business
         await state_manager.save_player(player)
+
+        # REST remains authoritative for transactions. The event stream only
+        # notifies connected clients that persisted competitive rankings changed.
+        realtime_event_hub.schedule_leaderboard_broadcast()
 
         return business
 
@@ -373,9 +380,22 @@ class BusinessController:
         # Assuming player.money exists. Using += since player.deduct_money is for subtractions
         player.money += request.total_revenue
 
+        # NEW STEP: Track revenue in Active Franchise Event
+        # We pass player_id so get_active_event can evaluate is_registered
+        active_event = await EventController.get_active_event(player_id)
+        if active_event and active_event.status == "active" and active_event.is_registered:
+            event_doc = await FranchiseEvent.find_one({"event_id": active_event.event_id})
+            if event_doc and player_id in event_doc.participants:
+                event_doc.participants[player_id] += request.total_revenue
+                await event_doc.save()
+
         # 4. Save state
         business.update_timestamp()
         player.businesses[idx] = business
         await state_manager.save_player(player)
+
+        # REST is authoritative for sales. This only tells subscribed clients
+        # to refresh their display-only competitive leaderboard snapshots.
+        realtime_event_hub.schedule_leaderboard_broadcast()
 
         return business

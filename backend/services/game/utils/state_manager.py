@@ -10,7 +10,7 @@ class StateManager:
     
     async def player_exists(self, player_id: str) -> bool:
         """Check if player exists."""
-        player = await PlayerState.find_one(PlayerState.player_id == player_id)
+        player = await PlayerState.find_one({"player_id": player_id})
         return player is not None
     
     async def save_player(self, player: PlayerState) -> None:
@@ -24,7 +24,7 @@ class StateManager:
     
     async def load_player(self, player_id: str) -> PlayerState:
         """Load player state from MongoDB."""
-        player = await PlayerState.find_one(PlayerState.player_id == player_id)
+        player = await PlayerState.find_one({"player_id": player_id})
         if not player:
             raise NotFoundError("Player", player_id)
             
@@ -37,7 +37,7 @@ class StateManager:
     
     async def delete_player(self, player_id: str) -> None:
         """Delete player data from MongoDB."""
-        player = await PlayerState.find_one(PlayerState.player_id == player_id)
+        player = await PlayerState.find_one({"player_id": player_id})
         if not player:
             raise NotFoundError("Player", player_id)
         

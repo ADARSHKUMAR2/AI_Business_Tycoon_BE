@@ -6,6 +6,9 @@ from services.game.routes import (
     land_routes,
     delivery_routes,
     world_state_routes,
+    leaderboard_routes,
+    realtime_routes,
+    event_routes,
 )
 from shared.exceptions import BusinessTycoonException
 from shared.database import init_db
@@ -36,6 +39,9 @@ app.include_router(employee_routes.router)
 app.include_router(land_routes.router)
 app.include_router(delivery_routes.router)
 app.include_router(world_state_routes.router)
+app.include_router(leaderboard_routes.router)
+app.include_router(realtime_routes.router)
+app.include_router(event_routes.router)
 
 @app.on_event("startup")
 async def startup_event():

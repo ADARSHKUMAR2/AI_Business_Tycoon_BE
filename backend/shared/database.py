@@ -31,12 +31,14 @@ async def init_db():
     
     # IMPORTANT: We must import our Beanie Document models here so Beanie knows about them
     from services.game.models.player import PlayerState
+    from services.game.models.events import FranchiseEvent
     
     # Initialize Beanie with the target database and list of document models
     await init_beanie(
         database=client[db_name],
         document_models=[
             PlayerState,
+            FranchiseEvent,
             # Add future document models here (e.g., GlobalMarketState)
         ]
     )
