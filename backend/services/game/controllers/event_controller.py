@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional, List
 from services.game.models.events import FranchiseEvent, EventStatus, EventCreate, EventResponse
+from services.game.models.business import Business, BusinessType
 from services.game.utils.state_manager import state_manager
 from shared.exceptions import BusinessTycoonException, NotFoundError, InvalidOperationError
 
@@ -87,3 +88,60 @@ class EventController:
         await event.save()
         
         return await EventController.get_active_event(player_id)
+    
+    @staticmethod
+    async def create_event_business(event_id: str, player_id: str) -> Business:
+        """Create a temporary franchise business for a player in an event."""
+        event = await FranchiseEvent.find_one({"event_id": event_id})
+        if not event:
+            raise NotFoundError("Event", event_id)
+        
+        if event.status == EventStatus.COMPLETED:
+            raise InvalidOperationError("Cannot create business for completed event.")
+        
+        if player_id not in event.participants:
+            raise InvalidOperationError("Player must be registered for the event first.")
+        
+        player = await state_manager.load_player(player_id)
+        
+        # Check if player already has an event business for this event
+        for biz in player.businesses:
+            if biz.is_event_business and biz.event_id == event_id:
+                return biz  # Already has event business
+        
+        # Determine business type based on franchise name
+        business_type = BusinessType.CAFE  # Default for Starbucks
+        if "pizza" in event.franchise_name.lower():
+            business_type = BusinessType.PIZZA
+        elif "restaurant" in event.franchise_name.lower():
+            business_type = BusinessType.RESTAURANT
+        elif "kirana" in event.franchise_name.lower():
+            business_type = BusinessType.KIRANA
+        
+        # Create event business at designated event zone (position 100, 0)
+        event_business = Business(
+            player_id=player_id,
+            business_type=business_type,
+            name=f"{event.franchise_name} Event",
+            position_x=100,  # Event zone
+            position_y=0,
+            is_event_business=True,
+            event_id=event_id,
+            inventory={},  # Will be stocked with default items
+            employees=[],
+            is_open=True
+        )
+        
+        # Add default inventory based on business type
+        if business_type == BusinessType.CAFE:
+            event_business.inventory = {
+                "coffee": {"name": "Coffee", "cost": 20.0, "price": 40.0, "stock": 50, "max_stock": 50, "total_sold": 0},
+                "pastry": {"name": "Pastry", "cost": 30.0, "price": 60.0, "stock": 30, "max_stock": 30, "total_sold": 0}
+            }
+        
+        player.businesses.append(event_business)
+        player.stats.businesses_owned += 1
+        
+        await state_manager.save_player(player)
+        
+        return event_business

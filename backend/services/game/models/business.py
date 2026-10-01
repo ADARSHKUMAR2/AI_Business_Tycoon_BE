@@ -82,6 +82,10 @@ class Business(BaseModel):
     stats:             BusinessStats            = Field(default_factory=BusinessStats)
     created_at:        datetime                 = Field(default_factory=datetime.utcnow)
     last_updated:      datetime                 = Field(default_factory=datetime.utcnow)
+    
+    # Event-specific fields
+    is_event_business: bool                     = Field(False, description="Whether this is a temporary event business")
+    event_id:          Optional[str]            = Field(None, description="Associated event ID if this is an event business")
 
     # ------------------------------------------------------------------
     # Cleanliness helpers
