@@ -32,11 +32,12 @@ class RealtimeEventHub:
             subscribers.discard(websocket)
 
     async def send_leaderboard_snapshot(self, websocket: WebSocket) -> None:
-        for metric in ("net-worth", "revenue", "customers-served"):
-            leaderboard = await LeaderboardController.get_leaderboard(metric)
+        """Send the current event leaderboard snapshot to a newly connected client."""
+        event_leaderboard = await LeaderboardController.get_event_leaderboard()
+        if event_leaderboard:
             await websocket.send_json({
                 "type": "leaderboard.updated",
-                **leaderboard.model_dump(mode="json"),
+                **event_leaderboard
             })
 
     def schedule_leaderboard_broadcast(self) -> None:
@@ -52,14 +53,16 @@ class RealtimeEventHub:
         if not subscribers:
             return
 
-        for metric in ("net-worth", "revenue", "customers-served"):
-            leaderboard = await LeaderboardController.get_leaderboard(metric)
-            payload = {"type": "leaderboard.updated", **leaderboard.model_dump(mode="json")}
-            for websocket in list(subscribers):
-                try:
-                    await websocket.send_json(payload)
-                except Exception:
-                    self.unsubscribe_all(websocket)
+        event_leaderboard = await LeaderboardController.get_event_leaderboard()
+        if not event_leaderboard:
+            return
+
+        payload = {"type": "leaderboard.updated", **event_leaderboard}
+        for websocket in list(subscribers):
+            try:
+                await websocket.send_json(payload)
+            except Exception:
+                self.unsubscribe_all(websocket)
 
 
 realtime_event_hub = RealtimeEventHub()

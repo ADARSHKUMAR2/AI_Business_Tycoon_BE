@@ -23,6 +23,8 @@ class FranchiseEvent(Document):
     # Track participants and their score during this event
     # Dict mapping player_id to their event revenue
     participants: Dict[str, float] = Field(default_factory=dict)
+    resolved: bool = Field(default=False, description="Whether rewards have been distributed and cleanup performed")
+    winners: List[str] = Field(default_factory=list, description="List of player IDs who won the franchise")
     
     class Settings:
         name = "franchise_events"
@@ -43,3 +45,5 @@ class EventResponse(BaseModel):
     max_winners: int
     is_registered: bool = False
     participant_count: int = 0
+    winners: List[str] = Field(default_factory=list)
+

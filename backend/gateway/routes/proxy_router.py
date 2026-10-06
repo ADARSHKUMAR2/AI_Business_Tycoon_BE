@@ -5,8 +5,8 @@ import os
 router = APIRouter()
 
 # Service URLs from environment or defaults
-AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:8001")
-GAME_SERVICE_URL = os.getenv("GAME_SERVICE_URL", "http://localhost:8002")
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://127.0.0.1:8001")
+GAME_SERVICE_URL = os.getenv("GAME_SERVICE_URL", "http://127.0.0.1:8002")
 
 # We use an httpx AsyncClient for efficient proxying
 # It's best practice to share one client instance

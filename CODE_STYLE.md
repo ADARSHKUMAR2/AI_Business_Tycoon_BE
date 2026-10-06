@@ -13,3 +13,4 @@
 - Every event gets a static `Raise<EventName>()` invoker method; handlers are named `On<EventName>`.
 - Do not update the scene in the game unless explicitily told to do so.
 - create editor scripts for all components and prefabs, dont create them in the code.
+- instead of boolean make use of events and use the event system to communicate between components, or make use of enums wherever possible.

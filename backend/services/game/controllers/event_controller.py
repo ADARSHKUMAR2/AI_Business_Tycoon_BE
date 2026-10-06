@@ -29,13 +29,25 @@ class EventController:
 
     @staticmethod
     async def get_active_event(player_id: str = None) -> Optional[EventResponse]:
-        """Get the currently active or upcoming event."""
+        """Get the currently active, upcoming, or recently completed event (grace period)."""
+        now = datetime.utcnow()
+        # Find active/upcoming OR recently completed events (within last 24 hours)
+        grace_period_cutoff = now - timedelta(hours=24)
+        
+        # Priority 1: Active or Upcoming
         event = await FranchiseEvent.find_one({"status": {"$in": [EventStatus.UPCOMING, EventStatus.ACTIVE]}})
+        
+        # Priority 2: Recently Completed (if no active/upcoming)
+        if not event:
+            event = await FranchiseEvent.find_one(
+                {"status": EventStatus.COMPLETED, "end_time": {"$gte": grace_period_cutoff}},
+                sort=[("end_time", -1)] # Get the most recent one
+            )
+            
         if not event:
             return None
             
         # Auto-update status if time has passed
-        now = datetime.utcnow()
         if event.status == EventStatus.UPCOMING and now >= event.start_time:
             if now >= event.end_time:
                 event.status = EventStatus.COMPLETED
@@ -45,7 +57,10 @@ class EventController:
         elif event.status == EventStatus.ACTIVE and now >= event.end_time:
             event.status = EventStatus.COMPLETED
             await event.save()
-            return None # Don't return completed events here
+            
+        # If it just completed (or was already completed), ensure it's resolved
+        if event.status == EventStatus.COMPLETED and not event.resolved:
+            await EventController.resolve_event(event)
             
         is_reg = False
         if player_id and player_id in event.participants:
@@ -60,7 +75,8 @@ class EventController:
             entry_fee=event.entry_fee,
             max_winners=event.max_winners,
             is_registered=is_reg,
-            participant_count=len(event.participants)
+            participant_count=len(event.participants),
+            winners=event.winners
         )
 
     @staticmethod
@@ -90,6 +106,56 @@ class EventController:
         return await EventController.get_active_event(player_id)
     
     @staticmethod
+    async def resolve_event(event: FranchiseEvent) -> None:
+        """Process an ended event: turn winners' temporary stores into permanent ones, delete losers' temporary stores."""
+        if event.resolved:
+            return
+            
+        # 1. Sort participants by revenue descending
+        sorted_participants = sorted(event.participants.items(), key=lambda item: item[1], reverse=True)
+        
+        # 2. Identify winners
+        winners = [p[0] for p in sorted_participants[:event.max_winners]]
+        
+        # Save winners list to the event document
+        event.winners = winners
+        
+        # 3. Process all participants
+        for player_id in event.participants.keys():
+            try:
+                player = await state_manager.load_player(player_id)
+                businesses_to_keep = []
+                player_updated = False
+                
+                for biz in player.businesses:
+                    if biz.is_event_business and biz.event_id == event.event_id:
+                        player_updated = True
+                        if player_id in winners:
+                            # WINNER: Store becomes permanent
+                            biz.is_event_business = False
+                            biz.event_id = None
+                            biz.name = f"{event.franchise_name} (Won!)"
+                            # We leave it at position (100, 0) for now. The player keeps it!
+                            businesses_to_keep.append(biz)
+                        else:
+                            # LOSER: Store is deleted
+                            pass # We simply don't add it to businesses_to_keep
+                    else:
+                        # Keep all normal businesses and businesses from other events
+                        businesses_to_keep.append(biz)
+                
+                if player_updated:
+                    player.businesses = businesses_to_keep
+                    await state_manager.save_player(player)
+            except Exception as e:
+                # Log error but continue processing other players
+                print(f"Error resolving event {event.event_id} for player {player_id}: {e}")
+                
+        # 4. Mark as resolved
+        event.resolved = True
+        await event.save()
+
+    @staticmethod
     async def create_event_business(event_id: str, player_id: str) -> Business:
         """Create a temporary franchise business for a player in an event."""
         event = await FranchiseEvent.find_one({"event_id": event_id})
@@ -104,12 +170,23 @@ class EventController:
         
         player = await state_manager.load_player(player_id)
         
-        # Check if player already has an event business for this event
+        # CLEANUP: Remove any OLD dead event businesses the player might have stuck in their DB
+        # from events that failed to resolve properly or were deleted.
+        cleaned_businesses = []
         for biz in player.businesses:
-            if biz.is_event_business and biz.event_id == event_id:
-                return biz  # Already has event business
+            if biz.is_event_business:
+                if biz.event_id == event_id:
+                    return biz  # Already has business for THIS event, return it
+                else:
+                    # This is an old dead event business. Skip it (delete it).
+                    pass
+            else:
+                cleaned_businesses.append(biz)
+        
+        player.businesses = cleaned_businesses
         
         # Determine business type based on franchise name
+
         business_type = BusinessType.CAFE  # Default for Starbucks
         if "pizza" in event.franchise_name.lower():
             business_type = BusinessType.PIZZA
