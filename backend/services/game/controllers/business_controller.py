@@ -381,13 +381,14 @@ class BusinessController:
         player.money += request.total_revenue
 
         # NEW STEP: Track revenue in Active Franchise Event
-        # We pass player_id so get_active_event can evaluate is_registered
-        active_event = await EventController.get_active_event(player_id)
-        if active_event and active_event.status == "active" and active_event.is_registered:
-            event_doc = await FranchiseEvent.find_one({"event_id": active_event.event_id})
-            if event_doc and player_id in event_doc.participants:
-                event_doc.participants[player_id] += request.total_revenue
-                await event_doc.save()
+        # Only add to the event score if the business making the sale is the registered event business
+        if business.is_event_business and business.event_id:
+            active_event = await EventController.get_active_event(player_id)
+            if active_event and active_event.status == "active" and active_event.is_registered and active_event.event_id == business.event_id:
+                event_doc = await FranchiseEvent.find_one({"event_id": active_event.event_id})
+                if event_doc and player_id in event_doc.participants:
+                    event_doc.participants[player_id] += request.total_revenue
+                    await event_doc.save()
 
         # 4. Save state
         business.update_timestamp()

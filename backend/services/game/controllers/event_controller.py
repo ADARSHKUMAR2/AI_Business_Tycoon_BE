@@ -135,7 +135,7 @@ class EventController:
                             biz.is_event_business = False
                             biz.event_id = None
                             biz.name = f"{event.franchise_name} (Won!)"
-                            # We leave it at position (100, 0) for now. The player keeps it!
+                            # Store stays exactly where the player placed it on their grid.
                             businesses_to_keep.append(biz)
                         else:
                             # LOSER: Store is deleted
@@ -156,7 +156,7 @@ class EventController:
         await event.save()
 
     @staticmethod
-    async def create_event_business(event_id: str, player_id: str) -> Business:
+    async def create_event_business(event_id: str, player_id: str, position_x: int, position_y: int) -> Business:
         """Create a temporary franchise business for a player in an event."""
         event = await FranchiseEvent.find_one({"event_id": event_id})
         if not event:
@@ -195,18 +195,26 @@ class EventController:
         elif "kirana" in event.franchise_name.lower():
             business_type = BusinessType.KIRANA
         
-        # Create event business at designated event zone (position 100, 0)
+        # Validate the chosen tile is empty (no existing business on it)
+        for biz in player.businesses:
+            if biz.position_x == position_x and biz.position_y == position_y:
+                raise InvalidOperationError(
+                    f"Tile ({position_x}, {position_y}) is already occupied by '{biz.name}'. "
+                    "Choose an empty tile for your event store."
+                )
+
+        # Create event business at the player-chosen grid tile
         event_business = Business(
             player_id=player_id,
             business_type=business_type,
             name=f"{event.franchise_name} Event",
-            position_x=100,  # Event zone
-            position_y=0,
+            position_x=position_x,
+            position_y=position_y,
             is_event_business=True,
             event_id=event_id,
-            inventory={},  # Will be stocked with default items
+            inventory={},
             employees=[],
-            is_open=True
+            is_open=True,
         )
         
         # Add default inventory based on business type
