@@ -1,19 +1,20 @@
-from passlib.context import CryptContext
+import bcrypt
 from shared.exceptions import InvalidOperationError, NotFoundError
 from services.game.models.player import PlayerState
 from services.game.utils.state_manager import state_manager
 from services.auth.models.auth_models import RegisterRequest, LoginRequest, AuthResponse
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class AuthController:
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
     @staticmethod
     def get_password_hash(password: str) -> str:
-        return pwd_context.hash(password)
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed.decode('utf-8')
 
     @staticmethod
     async def register(request: RegisterRequest) -> AuthResponse:
