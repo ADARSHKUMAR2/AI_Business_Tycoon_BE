@@ -113,9 +113,12 @@ class EventController:
             
         # 1. Sort participants by revenue descending
         sorted_participants = sorted(event.participants.items(), key=lambda item: item[1], reverse=True)
-        
-        # 2. Identify winners
-        winners = [p[0] for p in sorted_participants[:event.max_winners]]
+
+        # Filter out participants who earned 0 revenue
+        eligible_participants = [p for p in sorted_participants if p[1] > 0]
+
+        # 2. Identify winners from the eligible pool
+        winners = [p[0] for p in eligible_participants[:event.max_winners]]
         
         # Save winners list to the event document
         event.winners = winners
