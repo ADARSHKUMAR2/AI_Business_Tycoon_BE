@@ -67,6 +67,8 @@ class PlayerState(Document):
     """Complete player state."""
     player_id: str = Field(default_factory=lambda: f"player_{uuid.uuid4().hex[:8]}")
     name: str = Field(..., min_length=2, max_length=50)
+    email: Optional[str] = Field(None, description="Player email for login")
+    password_hash: Optional[str] = Field(None, description="Hashed password for login")
     money: float = Field(..., ge=0, description="Current money in ₹")
     land_tiles: List[LandTile] = Field(default_factory=list)
     businesses: List[Business] = Field(default_factory=list)

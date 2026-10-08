@@ -60,7 +60,7 @@ async def forward_request(request: Request, base_url: str, path: str) -> Respons
 @router.api_route("/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy_auth(request: Request, path: str):
     """Proxy all /auth/ requests to the Auth Service (Port 8001)"""
-    return await forward_request(request, AUTH_SERVICE_URL, path)
+    return await forward_request(request, AUTH_SERVICE_URL, f"auth/{path}")
 
 @router.api_route("/game/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy_game(request: Request, path: str):
