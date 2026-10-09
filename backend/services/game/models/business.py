@@ -164,6 +164,7 @@ class Business(BaseModel):
 
 class TransactionBatchSync(BaseModel):
     """Schema for syncing multiple local sales to the backend."""
+    batch_id: str = Field(..., min_length=1, max_length=100)
     items_sold: Dict[str, int] = Field(default_factory=dict)
     total_revenue: float = Field(0.0, ge=0)
     total_customers_served: int = Field(0, ge=0)

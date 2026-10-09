@@ -358,6 +358,9 @@ class BusinessController:
         player = await state_manager.load_player(player_id)
         idx, business = await BusinessController._find_business_in_player(player, business_id)
 
+        if request.batch_id in player.processed_transaction_batch_ids:
+            return business
+
         # 1. Process items sold
         for item_key, quantity in request.items_sold.items():
             if item_key in business.inventory:
@@ -393,6 +396,9 @@ class BusinessController:
         # 4. Save state
         business.update_timestamp()
         player.businesses[idx] = business
+        player.processed_transaction_batch_ids.append(request.batch_id)
+        # Keep the list bounded while retaining enough history for retries.
+        player.processed_transaction_batch_ids = player.processed_transaction_batch_ids[-1000:]
         await state_manager.save_player(player)
 
         # REST is authoritative for sales. This only tells subscribed clients

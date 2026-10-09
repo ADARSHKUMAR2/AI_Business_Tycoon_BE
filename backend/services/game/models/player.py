@@ -76,6 +76,7 @@ class PlayerState(Document):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_login: datetime = Field(default_factory=datetime.utcnow)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
+    processed_transaction_batch_ids: List[str] = Field(default_factory=list)
 
     # We must define Settings for Beanie
     class Settings:
