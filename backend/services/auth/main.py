@@ -1,10 +1,18 @@
-from fastapi import FastAPI
+import logging
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from fastapi import Request
 from services.auth.routes import auth_routes
-from shared.exceptions import BusinessTycoonException
+from shared.exceptions import (
+    BusinessTycoonException,
+    log_business_exception,
+    log_request_validation_error,
+)
 from shared.database import init_db
 import os
+
+logger = logging.getLogger("auth-service")
 
 app = FastAPI(
     title="Auth Service",
@@ -13,12 +21,23 @@ app = FastAPI(
 )
 
 async def auth_exception_handler(request: Request, exc: BusinessTycoonException):
+    log_business_exception(logger, request, exc)
     return JSONResponse(
         status_code=exc.status_code,
-        content={"success": False, "error": {"message": exc.message, "details": exc.details}}
+        content={"success": False, "error": {"message": exc.message, "details": exc.details}},
     )
 
+
+async def auth_validation_exception_handler(request: Request, exc: RequestValidationError):
+    await log_request_validation_error(logger, request, exc)
+    return JSONResponse(
+        status_code=422,
+        content={"success": False, "error": {"message": "Request validation failed", "details": exc.errors()}},
+    )
+
+
 app.add_exception_handler(BusinessTycoonException, auth_exception_handler)
+app.add_exception_handler(RequestValidationError, auth_validation_exception_handler)
 
 app.include_router(auth_routes.router)
 

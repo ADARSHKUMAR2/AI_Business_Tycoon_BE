@@ -1,7 +1,68 @@
 """
-Custom exceptions for AI Business Tycoon Backend
+Custom exceptions for AI Business Tycoon Backend.
+
+This module also contains the shared request-error logging helpers used by
+FastAPI services. Exceptions remain data-only; logging happens in handlers
+where the request context is available.
 """
+import json
+import logging
 from typing import Any, Optional
+
+from fastapi import Request
+from fastapi.exceptions import RequestValidationError
+
+
+MAX_LOG_BODY_LENGTH = 10_000
+
+
+def _request_body_for_log(body: bytes) -> str:
+    """Return a bounded, useful representation of a request body."""
+    if not body:
+        return "<empty>"
+
+    try:
+        value = json.loads(body)
+        body_text = json.dumps(value, ensure_ascii=False, default=str)
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        body_text = body.decode("utf-8", errors="replace")
+
+    if len(body_text) > MAX_LOG_BODY_LENGTH:
+        return f"{body_text[:MAX_LOG_BODY_LENGTH]}... [truncated]"
+    return body_text
+
+
+def log_business_exception(logger: logging.Logger, request: Request, exc: "BusinessTycoonException") -> None:
+    """Log a handled business exception with enough request context to debug it."""
+    logger.warning(
+        "API request failed | method=%s path=%s query=%s status=%s exception=%s "
+        "message=%s details=%s",
+        request.method,
+        request.url.path,
+        request.url.query or "<none>",
+        exc.status_code,
+        type(exc).__name__,
+        exc.message,
+        exc.details,
+    )
+
+
+async def log_request_validation_error(
+    logger: logging.Logger,
+    request: Request,
+    exc: RequestValidationError,
+) -> None:
+    """Log FastAPI/Pydantic validation failures, including the submitted body."""
+    body = await request.body()
+    logger.warning(
+        "API request validation failed | method=%s path=%s query=%s status=422 "
+        "errors=%s body=%s",
+        request.method,
+        request.url.path,
+        request.url.query or "<none>",
+        exc.errors(),
+        _request_body_for_log(body),
+    )
 
 
 class BusinessTycoonException(Exception):

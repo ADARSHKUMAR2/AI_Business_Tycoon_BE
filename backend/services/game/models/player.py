@@ -26,7 +26,7 @@ class PlayerCreate(BaseModel):
 class PlayerUpdate(BaseModel):
     """Schema for updating player data."""
     name: Optional[str] = Field(None, min_length=2, max_length=50)
-    money: Optional[float] = Field(None, ge=0)
+    money: Optional[float] = Field(None)
     stats: Optional[PlayerStats] = None
     
     model_config = {

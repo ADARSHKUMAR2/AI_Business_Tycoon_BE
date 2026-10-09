@@ -1,6 +1,10 @@
+import logging
+import os
+
 import httpx
 from fastapi import APIRouter, Request, HTTPException, Response
-import os
+
+logger = logging.getLogger("gateway.proxy")
 
 router = APIRouter()
 
@@ -39,6 +43,15 @@ async def forward_request(request: Request, base_url: str, path: str) -> Respons
         )
         
         proxy_res = await client.send(proxy_req)
+
+        if proxy_res.is_error:
+            logger.warning(
+                "Upstream API request failed | method=%s url=%s status=%s response_body=%s",
+                request.method,
+                url,
+                proxy_res.status_code,
+                proxy_res.text[:10_000],
+            )
         
         # Return the response exactly as the microservice sent it
         return Response(

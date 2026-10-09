@@ -1,7 +1,9 @@
 import bcrypt
 from shared.exceptions import InvalidOperationError, NotFoundError
 from services.game.models.player import PlayerState
+from services.game.models.land import LandTile, Position, LandType
 from services.game.utils.state_manager import state_manager
+from services.game.validators.player_validator import PlayerValidator
 from services.auth.models.auth_models import RegisterRequest, LoginRequest, AuthResponse
 
 
@@ -25,13 +27,19 @@ class AuthController:
 
         hashed_pw = AuthController.get_password_hash(request.password)
         
-        # Create player using defaults
+        # Create player using defaults and one starter land tile
+        starter_tile = LandTile(
+            position=Position(x=0, y=0),
+            tile_type=LandType.EMPTY,
+            purchase_cost=0.0
+        )
+        
         new_player = PlayerState(
             name=request.name,
             email=request.email,
             password_hash=hashed_pw,
             money=15000.0,
-            land_tiles=[],
+            land_tiles=[starter_tile],
             businesses=[]
         )
         
@@ -66,12 +74,21 @@ class AuthController:
 
     @staticmethod
     async def login_guest(name: str = "Guest Tycoon") -> AuthResponse:
+        # Keep guest-created names consistent with names accepted by player updates.
+        PlayerValidator.validate_player_name(name)
+
+        starter_tile = LandTile(
+            position=Position(x=0, y=0),
+            tile_type=LandType.EMPTY,
+            purchase_cost=0.0
+        )
+        
         new_player = PlayerState(
             name=name,
             email=None,
             password_hash=None,
             money=15000.0,
-            land_tiles=[],
+            land_tiles=[starter_tile],
             businesses=[]
         )
         await state_manager.save_player(new_player)

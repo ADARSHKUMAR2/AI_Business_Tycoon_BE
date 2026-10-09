@@ -1,4 +1,18 @@
-from fastapi import FastAPI
+import logging
+
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+from shared.exceptions import (
+    BusinessTycoonException,
+    log_business_exception,
+    log_request_validation_error,
+)
+
+logger = logging.getLogger("game-service")
+
+
 from services.game.routes import (
     player_routes,
     business_routes,
@@ -10,9 +24,24 @@ from services.game.routes import (
     realtime_routes,
     event_routes,
 )
-from shared.exceptions import BusinessTycoonException
 from shared.database import init_db
 import os
+
+
+async def game_exception_handler(request: Request, exc: BusinessTycoonException):
+    log_business_exception(logger, request, exc)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"success": False, "error": {"message": exc.message, "details": exc.details}},
+    )
+
+
+async def game_validation_exception_handler(request: Request, exc: RequestValidationError):
+    await log_request_validation_error(logger, request, exc)
+    return JSONResponse(
+        status_code=422,
+        content={"success": False, "error": {"message": "Request validation failed", "details": exc.errors()}},
+    )
 
 app = FastAPI(
     title="Game Service",
@@ -20,17 +49,9 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Exception handler for Game Service
-from fastapi.responses import JSONResponse
-from fastapi import Request
-
-async def game_exception_handler(request: Request, exc: BusinessTycoonException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"success": False, "error": {"message": exc.message, "details": exc.details}}
-    )
-
+# Exception handlers for Game Service
 app.add_exception_handler(BusinessTycoonException, game_exception_handler)
+app.add_exception_handler(RequestValidationError, game_validation_exception_handler)
 
 # Include Game Routers
 app.include_router(player_routes.router)
