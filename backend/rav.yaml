@@ -1,0 +1,20 @@
+scripts:
+  # Run commands from backend/ and start Docker Desktop first.
+
+  build-image: docker build --platform linux/amd64 -t ai-business-tycoon-backend:local .
+
+  run-gateway: docker run --rm --name ai-business-tycoon-gateway -p 8000:8000 ai-business-tycoon-backend:local
+
+  run-auth: docker run --rm --name ai-business-tycoon-auth --env-file .env -p 8001:8001 ai-business-tycoon-backend:local uv run --no-sync uvicorn services.auth.main:app --host 0.0.0.0 --port 8001
+
+  run-game: docker run --rm --name ai-business-tycoon-game --env-file .env -p 8002:8002 ai-business-tycoon-backend:local uv run --no-sync uvicorn services.game.main:app --host 0.0.0.0 --port 8002
+
+  health-gateway: curl --fail --show-error http://localhost:8000/health
+
+  health-auth: curl --fail --show-error http://localhost:8001/health
+
+  health-game: curl --fail --show-error http://localhost:8002/health
+
+  health-all: rav run health-gateway && rav run health-auth && rav run health-game
+
+  test: uv run pytest -v
