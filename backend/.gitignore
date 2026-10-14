@@ -48,7 +48,6 @@ htmlcov/
 
 # UV
 .uv/
-uv.lock
 
 # Logs
 *.log
