@@ -1,0 +1,117 @@
+name: Backend CD
+
+on:
+  workflow_run:
+    workflows: [Backend CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-cd-${{ github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: false
+
+env:
+  GCP_PROJECT_ID: businesstycoon-511514
+  GCP_REGION: asia-south1
+  ARTIFACT_REPOSITORY: business-tycoon-repo
+  IMAGE_NAME: backend
+
+jobs:
+  deploy:
+    name: Build and deploy all Cloud Run services
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out the exact CI-tested commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Authenticate to Google Cloud using service-account key
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker "${GCP_REGION}-docker.pkg.dev" --quiet
+
+      - name: Build and push the tested image
+        env:
+          IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: |
+          IMAGE="${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REPOSITORY}/${IMAGE_NAME}:${IMAGE_TAG}"
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/amd64 \
+            --build-arg UV_INDEX_URL=https://pypi.org/simple \
+            --tag "$IMAGE" \
+            --push \
+            backend
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Deploy private auth service
+        run: >-
+          gcloud run deploy business-tycoon-auth
+          --image="$IMAGE"
+          --command=uv
+          --args=run,--no-sync,uvicorn,services.auth.main:app,--host,0.0.0.0,--port,8001
+          --port=8001
+          --region="$GCP_REGION"
+          --project="$GCP_PROJECT_ID"
+          --no-allow-unauthenticated
+          --memory=1Gi
+          --set-env-vars=MONGODB_DB_NAME=ai_business_tycoon
+          --set-secrets=MONGODB_URI=MONGODB_URI:latest
+
+      - name: Deploy private game service
+        run: >-
+          gcloud run deploy business-tycoon-game
+          --image="$IMAGE"
+          --command=uv
+          --args=run,--no-sync,uvicorn,services.game.main:app,--host,0.0.0.0,--port,8002
+          --port=8002
+          --region="$GCP_REGION"
+          --project="$GCP_PROJECT_ID"
+          --no-allow-unauthenticated
+          --memory=1Gi
+          --set-env-vars=MONGODB_DB_NAME=ai_business_tycoon
+          --set-secrets=MONGODB_URI=MONGODB_URI:latest
+
+      - name: Resolve private service URLs
+        id: service-urls
+        run: |
+          echo "auth_url=$(gcloud run services describe business-tycoon-auth --region="$GCP_REGION" --project="$GCP_PROJECT_ID" --format='value(status.url)')" >> "$GITHUB_OUTPUT"
+          echo "game_url=$(gcloud run services describe business-tycoon-game --region="$GCP_REGION" --project="$GCP_PROJECT_ID" --format='value(status.url)')" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy public gateway
+        env:
+          AUTH_SERVICE_URL: ${{ steps.service-urls.outputs.auth_url }}
+          GAME_SERVICE_URL: ${{ steps.service-urls.outputs.game_url }}
+        run: >-
+          gcloud run deploy business-tycoon-gateway
+          --image="$IMAGE"
+          --command=uv
+          --args=run,--no-sync,uvicorn,gateway.main:app,--host,0.0.0.0,--port,8000
+          --port=8000
+          --region="$GCP_REGION"
+          --project="$GCP_PROJECT_ID"
+          --allow-unauthenticated
+          --memory=1Gi
+          --set-env-vars="AUTH_SERVICE_URL=${AUTH_SERVICE_URL},GAME_SERVICE_URL=${GAME_SERVICE_URL}"
