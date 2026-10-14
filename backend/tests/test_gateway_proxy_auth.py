@@ -61,6 +61,55 @@ async def test_forward_request_does_not_use_identity_token_for_local_http(monkey
 
 
 @pytest.mark.asyncio
+async def test_forward_request_filters_stale_and_hop_by_hop_response_headers(monkeypatch):
+    request = AsyncMock()
+    request.method = "GET"
+    request.query_params = {}
+    request.headers = {"host": "gateway.example"}
+
+    monkeypatch.setattr(
+        proxy_router,
+        "_get_upstream_identity_token",
+        AsyncMock(return_value="cloud-run-token"),
+    )
+    monkeypatch.setattr(proxy_router.client, "build_request", lambda **kwargs: kwargs)
+    upstream_response = Mock(
+        is_error=False,
+        content=b'{"ok":true}',
+        status_code=200,
+        headers={
+            "content-type": "application/json",
+            "content-encoding": "gzip",
+            "content-length": "42",
+            "connection": "keep-alive, x-upstream-private",
+            "x-upstream-private": "must-not-forward",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "cache-control": "no-store",
+        },
+    )
+    send = AsyncMock(return_value=upstream_response)
+    monkeypatch.setattr(proxy_router.client, "send", send)
+
+    response = await proxy_router.forward_request(
+        request, "https://game.example", "player/player-id"
+    )
+
+    assert response.body == b'{"ok":true}'
+    assert response.headers["content-type"] == "application/json"
+    assert response.headers["cache-control"] == "no-store"
+    assert response.headers["content-length"] == str(len(response.body))
+    for header in (
+        "content-encoding",
+        "connection",
+        "x-upstream-private",
+        "keep-alive",
+        "transfer-encoding",
+    ):
+        assert header not in response.headers
+
+
+@pytest.mark.asyncio
 async def test_identity_token_failure_returns_safe_503(monkeypatch):
     request = AsyncMock()
     request.method = "GET"

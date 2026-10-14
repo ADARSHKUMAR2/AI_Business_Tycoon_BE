@@ -21,6 +21,40 @@ GAME_SERVICE_URL = os.getenv("GAME_SERVICE_URL", "http://127.0.0.1:8002")
 client = httpx.AsyncClient()
 _google_auth_request = google.auth.transport.requests.Request()
 
+_HOP_BY_HOP_HEADERS = {
+    "connection",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+}
+_BODY_REPRESENTATION_HEADERS = {
+    "content-encoding",
+    "content-length",
+}
+
+
+def _get_forwardable_response_headers(headers: httpx.Headers) -> dict[str, str]:
+    """Filter headers that become invalid when forwarding HTTPX's decoded body."""
+    normalized_headers = httpx.Headers(headers)
+    connection_headers = {
+        token.strip().lower()
+        for value in normalized_headers.get_list("connection")
+        for token in value.split(",")
+        if token.strip()
+    }
+    excluded_headers = (
+        _HOP_BY_HOP_HEADERS | _BODY_REPRESENTATION_HEADERS | connection_headers
+    )
+    return {
+        name: value
+        for name, value in normalized_headers.items()
+        if name.lower() not in excluded_headers
+    }
+
 
 def _get_cloud_run_identity_token(audience: str) -> str:
     """Get a Google-signed ID token for a private Cloud Run service URL."""
@@ -84,11 +118,12 @@ async def forward_request(request: Request, base_url: str, path: str) -> Respons
                 proxy_res.text[:10_000],
             )
         
-        # Return the response exactly as the microservice sent it
+        # HTTPX may decompress response.content. Strip representation and
+        # hop-by-hop headers so they cannot contradict the forwarded body.
         return Response(
             content=proxy_res.content,
             status_code=proxy_res.status_code,
-            headers=dict(proxy_res.headers)
+            headers=_get_forwardable_response_headers(proxy_res.headers),
         )
         
     except httpx.RequestError as e:
