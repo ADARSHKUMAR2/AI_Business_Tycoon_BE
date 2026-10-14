@@ -17,9 +17,6 @@ jobs:
   test-and-build:
     name: Test and build backend image
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - name: Check out source
@@ -33,13 +30,13 @@ jobs:
           cache-dependency-glob: backend/uv.lock
 
       - name: Install locked dependencies
-        run: uv sync --locked --all-groups
+        run: cd backend && uv sync --project . --locked --all-groups
 
       - name: Lint gateway authentication changes
-        run: uv run --locked ruff check gateway/routes/proxy_router.py tests/test_gateway_proxy_auth.py
+        run: cd backend && uv run --project . --locked ruff check gateway/routes/proxy_router.py tests/test_gateway_proxy_auth.py
 
       - name: Run tests
-        run: uv run --locked pytest -q
+        run: cd backend && uv run --project . --locked pytest -q
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -51,7 +48,7 @@ jobs:
           --build-arg UV_INDEX_URL=https://pypi.org/simple
           --tag ai-business-tycoon-backend:ci
           --load
-          .
+          backend
 
       - name: Verify gateway runtime imports in image
         run: >-
