@@ -1,8 +1,12 @@
+import asyncio
 import logging
 import os
+from urllib.parse import urlparse
 
+import google.auth.transport.requests
+import google.oauth2.id_token
 import httpx
-from fastapi import APIRouter, Request, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Request, Response
 
 logger = logging.getLogger("gateway.proxy")
 
@@ -15,6 +19,27 @@ GAME_SERVICE_URL = os.getenv("GAME_SERVICE_URL", "http://127.0.0.1:8002")
 # We use an httpx AsyncClient for efficient proxying
 # It's best practice to share one client instance
 client = httpx.AsyncClient()
+_google_auth_request = google.auth.transport.requests.Request()
+
+
+def _get_cloud_run_identity_token(audience: str) -> str:
+    """Get a Google-signed ID token for a private Cloud Run service URL."""
+    return google.oauth2.id_token.fetch_id_token(_google_auth_request, audience)
+
+
+async def _get_upstream_identity_token(base_url: str) -> str | None:
+    """Get a Cloud Run token for HTTPS services; local HTTP needs no token."""
+    if urlparse(base_url).scheme != "https":
+        return None
+
+    try:
+        return await asyncio.to_thread(_get_cloud_run_identity_token, base_url)
+    except Exception as exc:
+        logger.exception("Unable to obtain Cloud Run identity token for upstream")
+        raise HTTPException(
+            status_code=503,
+            detail="Unable to authenticate with the backend service.",
+        ) from exc
 
 async def forward_request(request: Request, base_url: str, path: str) -> Response:
     """Helper function to forward HTTP requests to backend microservices."""
@@ -33,6 +58,12 @@ async def forward_request(request: Request, base_url: str, path: str) -> Respons
     headers.pop("host", None)
     
     try:
+        identity_token = await _get_upstream_identity_token(base_url)
+        if identity_token:
+            # Cloud Run checks this header for service authentication while
+            # preserving the caller's Authorization header for application auth.
+            headers["X-Serverless-Authorization"] = f"Bearer {identity_token}"
+
         # Make the proxied request
         proxy_req = client.build_request(
             method=request.method,
@@ -63,7 +94,7 @@ async def forward_request(request: Request, base_url: str, path: str) -> Respons
     except httpx.RequestError as e:
         raise HTTPException(
             status_code=503, 
-            detail=f"Service unavailable: Failed to connect to backend service. ({str(e)})"
+            detail=f"Service unavailable: Failed to connect to backend service. ({e!s})"
         )
 
 # ==========================================

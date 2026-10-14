@@ -1,6 +1,10 @@
 scripts:
   # Run commands from backend/ and start Docker Desktop first.
 
+  # ============================================================
+  # Local build, run, and test
+  # ============================================================
+
   build-image: docker build --platform linux/amd64 -t ai-business-tycoon-backend:local .
 
   run-gateway: docker run --rm --name ai-business-tycoon-gateway -p 8000:8000 ai-business-tycoon-backend:local
@@ -18,3 +22,52 @@ scripts:
   health-all: rav run health-gateway && rav run health-auth && rav run health-game
 
   test: uv run pytest -v
+
+  # ============================================================
+  # Google Cloud configuration
+  # ============================================================
+  # Target project is deliberately explicit: the active gcloud project
+  # may still point at the separate Mystery Rooms project.
+  # Authenticate with `gcloud auth login` and verify access before use.
+  # The two Secret Manager secrets must already exist:
+  #   MONGODB_URI
+  #   MONGODB_DB_NAME
+  # Do not put secret values in this file or in GitHub Actions variables.
+
+  gcp-config: gcloud config set project businesstycoon-511514
+
+  config-docker: gcloud auth configure-docker asia-south1-docker.pkg.dev
+
+  create-repo: gcloud artifacts repositories create business-tycoon-repo --repository-format=docker --location=asia-south1 --project=businesstycoon-511514 --description="AI Business Tycoon backend images"
+
+  # ============================================================
+  # Build and push a single shared image
+  # ============================================================
+  # Cloud Run overrides the default gateway command for auth and game.
+
+  build-gcp-image: docker build --platform linux/amd64 --build-arg UV_INDEX_URL=https://pypi.org/simple -t asia-south1-docker.pkg.dev/businesstycoon-511514/business-tycoon-repo/backend:$(git rev-parse --short=12 HEAD) .
+
+  push-gcp-image: docker push asia-south1-docker.pkg.dev/businesstycoon-511514/business-tycoon-repo/backend:$(git rev-parse --short=12 HEAD)
+
+  build-and-push-gcp-image: rav run build-gcp-image && rav run push-gcp-image
+
+  # ============================================================
+  # Cloud Run services
+  # ============================================================
+  # Auth and game are private. Gateway is public. MongoDB values are
+  # injected as environment variables from Secret Manager at runtime.
+  # This only sets Cloud Run IAM access; gateway code still needs to
+  # authenticate its requests to those private upstreams before proxy
+  # traffic can work (see next step/prerequisite).
+
+  deploy-auth: gcloud run deploy business-tycoon-auth --image=asia-south1-docker.pkg.dev/businesstycoon-511514/business-tycoon-repo/backend:$(git rev-parse --short=12 HEAD) --command=uv --args=run,--no-sync,uvicorn,services.auth.main:app,--host,0.0.0.0,--port,8001 --port=8001 --region=asia-south1 --project=businesstycoon-511514 --no-allow-unauthenticated --memory=1Gi --set-env-vars=MONGODB_DB_NAME=ai_business_tycoon --set-secrets=MONGODB_URI=MONGODB_URI:latest
+
+  deploy-game: gcloud run deploy business-tycoon-game --image=asia-south1-docker.pkg.dev/businesstycoon-511514/business-tycoon-repo/backend:$(git rev-parse --short=12 HEAD) --command=uv --args=run,--no-sync,uvicorn,services.game.main:app,--host,0.0.0.0,--port,8002 --port=8002 --region=asia-south1 --project=businesstycoon-511514 --no-allow-unauthenticated --memory=1Gi --set-env-vars=MONGODB_DB_NAME=ai_business_tycoon --set-secrets=MONGODB_URI=MONGODB_URI:latest
+
+  # Gateway depends on the services being deployed first. The command
+  # resolves their URLs from Cloud Run rather than hardcoding revisions.
+  deploy-gateway: gcloud run deploy business-tycoon-gateway --image=asia-south1-docker.pkg.dev/businesstycoon-511514/business-tycoon-repo/backend:$(git rev-parse --short=12 HEAD) --command=uv --args=run,--no-sync,uvicorn,gateway.main:app,--host,0.0.0.0,--port,8000 --port=8000 --region=asia-south1 --project=businesstycoon-511514 --allow-unauthenticated --memory=1Gi --set-env-vars=AUTH_SERVICE_URL=$(gcloud run services describe business-tycoon-auth --region=asia-south1 --project=businesstycoon-511514 --format='value(status.url)'),GAME_SERVICE_URL=$(gcloud run services describe business-tycoon-game --region=asia-south1 --project=businesstycoon-511514 --format='value(status.url)')
+
+  deploy-services: rav run deploy-auth && rav run deploy-game
+
+  deploy-all: rav run build-and-push-gcp-image && rav run deploy-services && rav run deploy-gateway

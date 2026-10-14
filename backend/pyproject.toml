@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.104.1",
+    "google-auth[requests]>=2.0.0",
     "httpx>=0.25.2",
     "uvicorn[standard]>=0.24.0",
     "pydantic>=2.5.0",
