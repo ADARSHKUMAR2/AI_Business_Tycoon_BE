@@ -14,3 +14,4 @@
 - Do not update the scene in the game unless explicitily told to do so.
 - create editor scripts for all components and prefabs, dont create them in the code.
 - instead of boolean make use of events and use the event system to communicate between components, or make use of enums wherever possible.
+-in plan mode first show me the changes with explanation and never directly update the files, even when creating a new file first show me the changes before directly applying
