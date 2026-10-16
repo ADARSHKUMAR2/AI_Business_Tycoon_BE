@@ -3313,3 +3313,68 @@
 [2026-10-16T07:57:40.299Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
 [2026-10-16T08:40:10.688Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
 [2026-10-16T09:40:11.146Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-16T10:28:33.037Z] INFO  [PrepareMsgHook] === Prepare-commit-msg hook started (source: message) ===
+[2026-10-16T10:28:33.045Z] INFO  [RepoProfile] manual-disable read → false (by=manuallyDisabled, pid=42409, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-16T10:28:33.054Z] INFO  [PrepareMsgHook] === Prepare-commit-msg hook finished ===
+[2026-10-16T10:28:33.160Z] INFO  [RepoProfile] [trace=24033b022565dba1fb32204688f5fd36] manual-disable read → false (by=manuallyDisabled, pid=42420, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-16T10:28:33.168Z] INFO  [PostCommitHook] [trace=24033b022565dba1fb32204688f5fd36] Detected operation: commit
+[2026-10-16T10:28:33.178Z] INFO  [PostCommitHook] [trace=24033b022565dba1fb32204688f5fd36] Enqueued: type=commit hash=8d0ca094
+[2026-10-16T10:28:33.179Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Launching background worker
+[2026-10-16T10:28:33.179Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Background worker spawned (PID: 42425)
+[2026-10-16T10:28:33.180Z] INFO  [EnsureGlobalDaemon] [trace=24033b022565dba1fb32204688f5fd36] spawned global daemon ensure helper (pid 42426)
+[2026-10-16T10:28:33.261Z] INFO  [RepoProfile] [trace=24033b022565dba1fb32204688f5fd36] manual-disable read → false (by=manuallyDisabled, pid=42425, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-16T10:28:33.304Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] === Queue worker started === node=24.13.0 kind=vscode-plugin source=vscode pkgVer=0.99.18 cliVer=0.99.18 dist=/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.18/dist
+[2026-10-16T10:28:33.308Z] INFO  [StorageFactory] [trace=24033b022565dba1fb32204688f5fd36] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-16T10:28:33.409Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Processing queue entry: type=commit hash=8d0ca094
+[2026-10-16T10:28:33.420Z] INFO  [GitOps] [trace=24033b022565dba1fb32204688f5fd36] Commit 8d0ca094: fix for 5 min delivery bug
+[2026-10-16T10:28:33.420Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Commit: 8d0ca094 - fix for 5 min delivery bug (8ms)
+[2026-10-16T10:28:33.517Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Discovered 2 Cline CLI session(s)
+[2026-10-16T10:28:33.603Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Transcript source: session=1791978335675_a9d2s, lines=568→1070, entries=92
+[2026-10-16T10:28:33.608Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Transcript source: session=1792143520282_baqv8, lines=0→162, entries=24
+[2026-10-16T10:28:33.695Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Git diff: 15 files changed, +258 -88 (87ms)
+[2026-10-16T10:28:33.742Z] INFO  [TranscriptReader] [trace=24033b022565dba1fb32204688f5fd36] Conversation budget reached: kept 107/116 transcript entries (~149476/150000 chars); older turns dropped
+[2026-10-16T10:28:33.891Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Prompt blocks: plans=0 notes=0 references=0 (+0 track-only archived, not prompted) (AI soft-excluded 0)
+[2026-10-16T10:28:33.891Z] INFO  [Summarizer] [trace=24033b022565dba1fb32204688f5fd36] Generating summary for commit 8d0ca094
+[2026-10-16T10:28:33.891Z] INFO  [Summarizer] [trace=24033b022565dba1fb32204688f5fd36] Context: transcript=116, files=15, lines=258+88
+[2026-10-16T10:28:33.891Z] WARN  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] First API attempt failed: No LLM provider available. Set an Anthropic API key (ANTHROPIC_API_KEY) or configure a Jolli Space API key (jolliApiKey).. Retrying in 2000ms...
+[2026-10-16T10:28:35.894Z] INFO  [Summarizer] [trace=24033b022565dba1fb32204688f5fd36] Generating summary for commit 8d0ca094
+[2026-10-16T10:28:35.894Z] INFO  [Summarizer] [trace=24033b022565dba1fb32204688f5fd36] Context: transcript=116, files=15, lines=258+88
+[2026-10-16T10:28:35.895Z] ERROR [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] API call failed after retry: No LLM provider available. Set an Anthropic API key (ANTHROPIC_API_KEY) or configure a Jolli Space API key (jolliApiKey).
+[2026-10-16T10:28:35.895Z] WARN  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Saving summary with empty topics + llm-failed marker for commit 8d0ca094
+[2026-10-16T10:28:35.895Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] API summary generated (2.0s)
+[2026-10-16T10:28:35.896Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Plan registry scan: found 0 uncommitted slug(s) on main: []
+[2026-10-16T10:28:35.896Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Plan association: detected 0 slug(s) from transcripts: []
+[2026-10-16T10:28:35.896Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Note registry scan: found 0 uncommitted note(s) on main: []
+[2026-10-16T10:28:35.896Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Note association: detected 0 note(s): []
+[2026-10-16T10:28:35.896Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Reference association: detected 0 ref(s) for branch main
+[2026-10-16T10:28:35.899Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Summary built for 8d0ca094: recap=no, topics=0, plans=absent, notes=absent, references=absent
+[2026-10-16T10:28:35.975Z] INFO  [MetadataManager] [trace=24033b022565dba1fb32204688f5fd36] Manifest updated: main/fix-for-5-min-delivery-bug-8d0ca094.md (commit)
+[2026-10-16T10:28:35.975Z] INFO  [FolderStorage] [trace=24033b022565dba1fb32204688f5fd36] Markdown generated: main/fix-for-5-min-delivery-bug-8d0ca094.md
+[2026-10-16T10:28:35.976Z] INFO  [FolderStorage] [trace=24033b022565dba1fb32204688f5fd36] Wrote 4 files, deleted 0 (Add summary for 8d0ca094: fix for 5 min delivery bug)
+[2026-10-16T10:28:35.976Z] INFO  [SummaryStore] [trace=24033b022565dba1fb32204688f5fd36] Summary stored successfully for commit 8d0ca094
+[2026-10-16T10:28:35.979Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Summary stored successfully for commit 8d0ca094 (79ms, 0 plans, 0 notes, 0 references)
+[2026-10-16T10:28:35.979Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] === Pipeline completed in 2.6s ===
+[2026-10-16T10:28:35.979Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] === Summary content (0 topics) ===
+[2026-10-16T10:28:35.981Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] Processed 1 queue entries
+[2026-10-16T10:28:35.981Z] INFO  [PushExecutor] [trace=24033b022565dba1fb32204688f5fd36] Post-queue push trigger: scheduling drain for 1 newly generated summar(ies)
+[2026-10-16T10:28:35.983Z] INFO  [PushPendingStore] [trace=24033b022565dba1fb32204688f5fd36] Pruned 2 stale push-pending entries (>168h old)
+[2026-10-16T10:28:35.983Z] INFO  [PushExecutor] [trace=24033b022565dba1fb32204688f5fd36] processPushPending(post-queue): 8 pending entr(ies) (filtered to 1 hash(es))
+[2026-10-16T10:28:35.988Z] INFO  [PushExecutor] [trace=24033b022565dba1fb32204688f5fd36] processPushPending(post-queue): not signed in — keeping 8 entries for later
+[2026-10-16T10:28:36.010Z] INFO  [GitOps] [trace=24033b022565dba1fb32204688f5fd36] Commit 8d0ca094: fix for 5 min delivery bug
+[2026-10-16T10:28:36.067Z] INFO  [StorageFactory] [trace=24033b022565dba1fb32204688f5fd36] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-16T10:28:36.108Z] INFO  [QueueWorker] [trace=24033b022565dba1fb32204688f5fd36] === Queue worker finished ===
+[2026-10-16T10:28:36.109Z] INFO  [SessionStartHook] [trace=24033b022565dba1fb32204688f5fd36] Briefing cache not warmed — nothing to brief on this branch
+[2026-10-16T10:28:36.126Z] INFO  [SessionSync] [trace=24033b022565dba1fb32204688f5fd36] session sync: not uploading — no API key configured
+[2026-10-16T10:28:36.486Z] INFO  [PlanService] detectPlans found 0 plans (0 in registry)
+[2026-10-16T10:28:36.658Z] INFO  [PrePushHook] [trace=27088909ea8d5a4fb7c4d1e45c83a2eb] pre-push hook: remote=origin budget=3000ms
+[2026-10-16T10:28:36.662Z] INFO  [RepoProfile] [trace=27088909ea8d5a4fb7c4d1e45c83a2eb] manual-disable read → false (by=manuallyDisabled, pid=42649, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-16T10:28:36.675Z] INFO  [PushPendingStore] [trace=27088909ea8d5a4fb7c4d1e45c83a2eb] Enqueued 1 new push-pending entries (branch=main)
+[2026-10-16T10:28:36.677Z] INFO  [PrePushHook] [trace=27088909ea8d5a4fb7c4d1e45c83a2eb] pre-push: recorded 1 commit(s) across 1 pushed ref(s)
+[2026-10-16T10:28:36.685Z] INFO  [PrePushHook] [trace=27088909ea8d5a4fb7c4d1e45c83a2eb] Recorded 1 commit(s) for later sync — not signed in to Jolli
+[2026-10-16T10:28:36.491Z] INFO  [references] detectReferences(*) found 0 (0 in registry)
+[2026-10-16T10:28:36.717Z] INFO  [StorageFactory] [trace=27088909ea8d5a4fb7c4d1e45c83a2eb] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-16T10:28:36.491Z] INFO  [NoteService] detectNotes found 0 notes (0 in registry)
+[2026-10-16T10:28:36.492Z] INFO  [SkillProjection] projectActiveSkills: 0 active (0 in registry)
+[2026-10-16T10:28:39.634Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-16T10:32:41.602Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-16T10:40:12.148Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
