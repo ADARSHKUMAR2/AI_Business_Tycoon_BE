@@ -55,7 +55,7 @@ def test_refresh_does_not_deliver_before_due_time():
     assert schedule.next_delivery_at == now + timedelta(minutes=4)
 
 
-def test_due_delivery_only_restocks_supply_items_and_preserves_cadence():
+def test_due_delivery_advances_window_without_changing_shelf_stock():
     now = datetime(2026, 1, 1, 12, 16)
     due_at = now - timedelta(minutes=11)
     schedule = DeliverySchedule(
@@ -67,7 +67,7 @@ def test_due_delivery_only_restocks_supply_items_and_preserves_cadence():
 
     DeliveryController._refresh_delivery_state(business, now)
 
-    assert business.inventory["ingredient"].stock == 10
+    assert business.inventory["ingredient"].stock == 2
     assert business.inventory["crafted"].stock == 2
     assert schedule.last_delivery_at == now - timedelta(minutes=1)
     assert schedule.next_delivery_at == now + timedelta(minutes=4)
@@ -120,13 +120,13 @@ async def run_express_delivery(
         ), collection
 
 
-def test_express_delivery_charges_restock_and_records_key_atomically():
+def test_express_delivery_charges_and_advances_window_without_changing_shelf_stock():
     async def scenario():
         business = make_business(DeliverySchedule())
         player = make_player(business)
         updated = make_business(DeliverySchedule())
         updated.business_id = business.business_id
-        updated.inventory["ingredient"].stock = 10
+        updated.inventory["ingredient"].stock = 2
         updated.delivery_schedule.processed_express_delivery_keys = ["request-1"]
         updated.delivery_schedule.last_delivery_at = datetime.utcnow()
         updated.delivery_schedule.next_delivery_at = (
@@ -136,16 +136,14 @@ def test_express_delivery_charges_restock_and_records_key_atomically():
             player, business, "request-1", player_document(player, updated)
         )
 
-        assert returned_business.inventory["ingredient"].stock == 10
+        assert returned_business.inventory["ingredient"].stock == 2
         assert returned_business.inventory["crafted"].stock == 2
         update = collection.find_one_and_update.await_args.args[1]
         assert update["$inc"] == {"money": -500.0, "stats.total_expenses": 500.0}
         assert update["$push"][
             "businesses.$[biz].delivery_schedule.processed_express_delivery_keys"
         ] == "request-1"
-        assert update["$set"][
-            "businesses.$[biz].inventory.ingredient.stock"
-        ] == 10
+        assert "businesses.$[biz].inventory.ingredient.stock" not in update["$set"]
         assert "businesses.$[biz].inventory.crafted.stock" not in update["$set"]
         query = collection.find_one_and_update.await_args.args[0]
         assert query["businesses"]["$elemMatch"]["delivery_schedule.processed_express_delivery_keys"] == {
@@ -179,7 +177,7 @@ def test_concurrent_express_delivery_retry_returns_processed_business():
             DeliverySchedule(processed_express_delivery_keys=["request-1"])
         )
         processed.business_id = business.business_id
-        processed.inventory["ingredient"].stock = 10
+        processed.inventory["ingredient"].stock = 2
         returned_business, collection = await run_express_delivery(
             player,
             business,
@@ -188,7 +186,7 @@ def test_concurrent_express_delivery_retry_returns_processed_business():
             retry_document=player_document(player, processed),
         )
 
-        assert returned_business.inventory["ingredient"].stock == 10
+        assert returned_business.inventory["ingredient"].stock == 2
         assert "request-1" in returned_business.delivery_schedule.processed_express_delivery_keys
         collection.find_one_and_update.assert_awaited_once()
         assert collection.find_one.await_count == 2
@@ -208,6 +206,64 @@ def test_express_delivery_distinct_key_can_be_processed():
 
         assert "request-2" in returned_business.delivery_schedule.processed_express_delivery_keys
         collection.find_one_and_update.assert_awaited_once()
+
+    asyncio.run(scenario())
+
+
+def test_supply_deposit_updates_shelf_stock_without_charging_player():
+    async def scenario():
+        from services.game.controllers.business_controller import BusinessController
+        from services.game.models.inventory import InventoryUpdate
+
+        business = make_business(DeliverySchedule(last_delivery_at=datetime.utcnow()))
+        business.inventory["ingredient"].stock = 4
+        player = make_player(business, money=1234.0)
+
+        with patch("services.game.controllers.business_controller.state_manager.load_player", new=AsyncMock(return_value=player)), \
+             patch("services.game.controllers.business_controller.state_manager.save_player", new=AsyncMock()) as save_player:
+            updated = await BusinessController.update_inventory(
+                player.player_id,
+                business.business_id,
+                InventoryUpdate(
+                    item_key="ingredient",
+                    stock=5,
+                    price=business.inventory["ingredient"].price,
+                    is_supply_deposit=True,
+                ),
+            )
+
+        assert updated.inventory["ingredient"].stock == 5
+        assert player.money == 1234.0
+        save_player.assert_awaited_once()
+
+    asyncio.run(scenario())
+
+
+def test_supply_deposit_rejects_more_than_one_added_item():
+    async def scenario():
+        from services.game.controllers.business_controller import BusinessController
+        from services.game.models.inventory import InventoryUpdate
+        from shared.exceptions import InvalidOperationError
+
+        business = make_business(DeliverySchedule(last_delivery_at=datetime.utcnow()))
+        business.inventory["ingredient"].stock = 4
+        player = make_player(business)
+
+        with patch("services.game.controllers.business_controller.state_manager.load_player", new=AsyncMock(return_value=player)):
+            try:
+                await BusinessController.update_inventory(
+                    player.player_id,
+                    business.business_id,
+                    InventoryUpdate(
+                        item_key="ingredient",
+                        stock=6,
+                        price=business.inventory["ingredient"].price,
+                        is_supply_deposit=True,
+                    ),
+                )
+            except InvalidOperationError:
+                return
+            raise AssertionError("Expected multi-item supply deposit to be rejected")
 
     asyncio.run(scenario())
 

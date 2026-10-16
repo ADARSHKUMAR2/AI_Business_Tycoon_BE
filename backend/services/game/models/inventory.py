@@ -10,7 +10,7 @@ class InventoryItem(BaseModel):
     name:      str   = Field(..., description="Display name of the item")
     cost:      float = Field(..., gt=0, description="Cost price per unit")
     price:     float = Field(..., gt=0, description="Selling price per unit")
-    stock:     int   = Field(..., ge=0, description="Current stock quantity")
+    stock:     int   = Field(..., ge=0, description="Current shelf stock quantity")
     max_stock: int   = Field(10, ge=10, description="Maximum shelf capacity (10, 20, or 30)")
     total_sold: int  = Field(0, ge=0, description="Total units sold")
     is_sellable: bool  = Field(True, description="True if customers can buy this, False for ingredients")

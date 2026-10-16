@@ -119,7 +119,6 @@ class BusinessController:
                 f"Upgrade the shelf first."
             )
 
-        # Charge the player if restocking
         if update.stock > item.stock:
             added_stock = update.stock - item.stock
             cost        = added_stock * item.cost
@@ -369,7 +368,14 @@ class BusinessController:
                 item.stock = max(0, item.stock - quantity)
                 item.total_sold += quantity
 
-        # 2. Add revenue to business stats
+        # 2. Process items restocked
+        for item_key, quantity in request.items_restocked.items():
+            if item_key in business.inventory:
+                item = business.inventory[item_key]
+                # Add restocked units, capped at max_stock
+                item.stock = min(item.max_stock, item.stock + quantity)
+
+        # 3. Add revenue to business stats
         business.stats.total_revenue += request.total_revenue
         business.stats.total_customers_served += request.total_customers_served
         
@@ -379,7 +385,7 @@ class BusinessController:
                 business.stats.total_revenue / business.stats.total_customers_served
             )
 
-        # 3. Add money to the player's wallet
+        # 4. Add money to the player's wallet
         # Assuming player.money exists. Using += since player.deduct_money is for subtractions
         player.money += request.total_revenue
 
@@ -393,7 +399,7 @@ class BusinessController:
                     event_doc.participants[player_id] += request.total_revenue
                     await event_doc.save()
 
-        # 4. Save state
+        # 5. Save state
         business.update_timestamp()
         player.businesses[idx] = business
         player.processed_transaction_batch_ids.append(request.batch_id)

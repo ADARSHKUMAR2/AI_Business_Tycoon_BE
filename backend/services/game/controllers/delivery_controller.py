@@ -21,13 +21,6 @@ class DeliveryController:
     """Manage supply truck deliveries for businesses."""
 
     @staticmethod
-    def _restock_deliverable_inventory(business: Business) -> None:
-        """Restock delivered supplies, excluding crafted products."""
-        for item in business.inventory.values():
-            if item.has_supply_zone:
-                item.stock = item.max_stock
-
-    @staticmethod
     async def _find_business_in_player(player: PlayerState, business_id: str) -> tuple[int, Business]:
         for idx, biz in enumerate(player.businesses):
             if biz.business_id == business_id:
@@ -37,9 +30,8 @@ class DeliveryController:
     @staticmethod
     def _refresh_delivery_state(business: Business, now: Optional[datetime] = None) -> None:
         """
-        Server-authoritative update:
-        - Restock delivered supplies when a truck is due
-        - Preserve the scheduled interval if status polling happens late
+        Advance the delivery schedule and open a supply window without changing
+        shelf inventory. The player/restocker must carry delivered goods to shelves.
         """
         schedule = business.delivery_schedule
         if not schedule.is_active:
@@ -59,7 +51,6 @@ class DeliveryController:
             elapsed_intervals = (current - schedule.next_delivery_at) // interval
             latest_delivery_at = schedule.next_delivery_at + elapsed_intervals * interval
 
-            DeliveryController._restock_deliverable_inventory(business)
             schedule.last_delivery_at = latest_delivery_at
             schedule.next_delivery_at = latest_delivery_at + interval
 
@@ -103,10 +94,7 @@ class DeliveryController:
 
     @staticmethod
     async def trigger_manual_restock(player_id: str, business_id: str) -> Business:
-        """
-        Force a restock for testing or admin operations.
-        This is useful when you want to manually trigger a truck.
-        """
+        """Force a delivery window for testing/admin without changing shelf stock."""
         player = await state_manager.load_player(player_id)
         idx, business = await DeliveryController._find_business_in_player(player, business_id)
 
@@ -115,8 +103,6 @@ class DeliveryController:
             raise InvalidOperationError("Delivery system is disabled for this business")
 
         now = datetime.utcnow()
-        DeliveryController._restock_deliverable_inventory(business)
-
         schedule.mark_delivered(now)
         business.last_updated = now
         player.businesses[idx] = business
@@ -128,7 +114,7 @@ class DeliveryController:
     async def request_express_delivery(
         player_id: str, business_id: str, idempotency_key: str
     ) -> Business:
-        """Charge and deliver exactly once for a client-generated retry key."""
+        """Charge and open a delivery window exactly once for a client retry key."""
         collection = PlayerState.get_motor_collection()
         player_document = await collection.find_one({"player_id": player_id})
         if player_document is None:
@@ -157,10 +143,6 @@ class DeliveryController:
             "businesses.$[biz].delivery_schedule.next_delivery_at": next_delivery_at,
             "businesses.$[biz].last_updated": now,
         }
-        for item_key, item in business.inventory.items():
-            if item.has_supply_zone:
-                set_fields[f"businesses.$[biz].inventory.{item_key}.stock"] = item.max_stock
-
         collection = PlayerState.get_motor_collection()
         updated_player = await collection.find_one_and_update(
             {
