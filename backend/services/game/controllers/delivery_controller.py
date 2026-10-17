@@ -10,7 +10,7 @@ from typing import Optional
 from pymongo import ReturnDocument
 
 from services.game.models.business import Business
-from services.game.models.delivery import DeliveryStatusResponse
+from services.game.models.delivery import DeliveryStatusResponse, DeliveryStatusesResponse
 from services.game.models.player import PlayerState
 from services.game.utils.state_manager import state_manager
 from services.game.validators.player_validator import PlayerValidator
@@ -91,6 +91,45 @@ class DeliveryController:
             delivery_interval_minutes=schedule.delivery_interval_minutes,
             express_delivery_cost=schedule.express_delivery_cost,
         )
+
+    @staticmethod
+    async def get_all_delivery_statuses(player_id: str) -> DeliveryStatusesResponse:
+        """Return one authoritative delivery snapshot for all player businesses."""
+        player = await state_manager.load_player(player_id)
+        now = datetime.utcnow()
+        statuses: list[DeliveryStatusResponse] = []
+        changed = False
+
+        for index, business in enumerate(player.businesses):
+            schedule = business.delivery_schedule
+            previous_last_delivery = schedule.last_delivery_at
+            previous_next_delivery = schedule.next_delivery_at
+
+            DeliveryController._refresh_delivery_state(business, now)
+
+            changed = changed or (
+                previous_last_delivery != schedule.last_delivery_at
+                or previous_next_delivery != schedule.next_delivery_at
+            )
+            player.businesses[index] = business
+
+            statuses.append(
+                DeliveryStatusResponse(
+                    business_id=business.business_id,
+                    supply_available=schedule.is_supply_available(now),
+                    seconds_until_next=schedule.seconds_until_next(now),
+                    supply_window_remaining=schedule.seconds_until_supply_window_end(now),
+                    last_delivery_at=schedule.last_delivery_at,
+                    next_delivery_at=schedule.next_delivery_at,
+                    delivery_interval_minutes=schedule.delivery_interval_minutes,
+                    express_delivery_cost=schedule.express_delivery_cost,
+                )
+            )
+
+        if changed:
+            await state_manager.save_player(player)
+
+        return DeliveryStatusesResponse(server_time=now, businesses=statuses)
 
     @staticmethod
     async def trigger_manual_restock(player_id: str, business_id: str) -> Business:

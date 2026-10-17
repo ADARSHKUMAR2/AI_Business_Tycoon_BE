@@ -110,6 +110,12 @@ class DeliveryStatusResponse(BaseModel):
     express_delivery_cost: float
 
 
+class DeliveryStatusesResponse(BaseModel):
+    """Delivery status for every business owned by a player."""
+    server_time: datetime
+    businesses: list[DeliveryStatusResponse]
+
+
 class ExpressDeliveryRequest(BaseModel):
     """Client-generated key used to make express delivery retries safe."""
     idempotency_key: str = Field(..., min_length=1, max_length=128)

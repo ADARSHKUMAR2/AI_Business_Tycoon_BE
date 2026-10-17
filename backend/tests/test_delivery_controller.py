@@ -8,6 +8,7 @@ from services.game.models.business import Business, BusinessType
 from services.game.models.delivery import DeliverySchedule
 from services.game.models.inventory import InventoryItem
 from services.game.models.player import PlayerState
+from services.game.utils.state_manager import state_manager
 
 
 def make_business(schedule: DeliverySchedule) -> Business:
@@ -86,6 +87,80 @@ def test_inactive_schedule_does_not_restock():
 
     assert business.inventory["ingredient"].stock == 2
     assert business.inventory["crafted"].stock == 2
+
+
+def test_batch_delivery_statuses_use_one_server_time_and_advance_due_businesses():
+    async def scenario():
+        now = datetime(2026, 1, 1, 12, 16)
+        due_business = make_business(
+            DeliverySchedule(
+                delivery_interval_minutes=5,
+                last_delivery_at=now - timedelta(minutes=11),
+                next_delivery_at=now - timedelta(minutes=6),
+            )
+        )
+        due_business.business_id = "business_due"
+        pending_business = make_business(
+            DeliverySchedule(
+                delivery_interval_minutes=5,
+                last_delivery_at=now - timedelta(minutes=1),
+                next_delivery_at=now + timedelta(minutes=4),
+            )
+        )
+        pending_business.business_id = "business_pending"
+        player = SimpleNamespace(
+            player_id="player_test",
+            businesses=[due_business, pending_business],
+        )
+
+        with patch(
+            "services.game.controllers.delivery_controller.datetime",
+            wraps=datetime,
+        ) as datetime_mock, patch.object(
+            state_manager, "load_player", new=AsyncMock(return_value=player)
+        ) as load_player, patch.object(
+            state_manager, "save_player", new=AsyncMock()
+        ) as save_player:
+            datetime_mock.utcnow.return_value = now
+            response = await DeliveryController.get_all_delivery_statuses("player_test")
+
+        assert response.server_time == now
+        assert [item.business_id for item in response.businesses] == [
+            "business_due",
+            "business_pending",
+        ]
+        assert response.businesses[0].last_delivery_at == now - timedelta(minutes=1)
+        assert response.businesses[1].next_delivery_at == now + timedelta(minutes=4)
+        load_player.assert_awaited_once_with("player_test")
+        save_player.assert_awaited_once_with(player)
+
+    asyncio.run(scenario())
+
+
+def test_batch_delivery_statuses_does_not_save_when_schedules_are_unchanged():
+    async def scenario():
+        now = datetime(2026, 1, 1, 12, 0)
+        business = make_business(
+            DeliverySchedule(
+                last_delivery_at=now - timedelta(minutes=1),
+                next_delivery_at=now + timedelta(minutes=4),
+            )
+        )
+        player = SimpleNamespace(player_id="player_test", businesses=[business])
+
+        with patch(
+            "services.game.controllers.delivery_controller.datetime",
+            wraps=datetime,
+        ) as datetime_mock, patch.object(
+            state_manager, "load_player", new=AsyncMock(return_value=player)
+        ), patch.object(state_manager, "save_player", new=AsyncMock()) as save_player:
+            datetime_mock.utcnow.return_value = now
+            response = await DeliveryController.get_all_delivery_statuses("player_test")
+
+        assert len(response.businesses) == 1
+        save_player.assert_not_awaited()
+
+    asyncio.run(scenario())
 
 
 def make_player(business: Business, money: float = 2000.0):

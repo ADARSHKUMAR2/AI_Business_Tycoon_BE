@@ -6,9 +6,24 @@ from fastapi import APIRouter, Path
 
 from services.game.controllers.delivery_controller import DeliveryController
 from services.game.models.business import Business
-from services.game.models.delivery import DeliveryStatusResponse, ExpressDeliveryRequest
+from services.game.models.delivery import (
+    DeliveryStatusResponse,
+    DeliveryStatusesResponse,
+    ExpressDeliveryRequest,
+)
 
 router = APIRouter(prefix="/delivery", tags=["Delivery"])
+
+
+@router.get(
+    "/{player_id}/status",
+    response_model=DeliveryStatusesResponse,
+    summary="Get supply delivery status for all player businesses",
+)
+async def get_all_delivery_statuses(
+    player_id: str = Path(..., description="Player ID"),
+):
+    return await DeliveryController.get_all_delivery_statuses(player_id)
 
 
 @router.get(
