@@ -220,12 +220,45 @@ class EventController:
             is_open=True,
         )
         
-        # Add default inventory based on business type
-        if business_type == BusinessType.CAFE:
-            event_business.inventory = {
-                "coffee": {"name": "Coffee", "cost": 20.0, "price": 40.0, "stock": 50, "max_stock": 50, "total_sold": 0},
-                "pastry": {"name": "Pastry", "cost": 30.0, "price": 60.0, "stock": 30, "max_stock": 30, "total_sold": 0}
+        # Event businesses use four products for their business type.
+        # Every event item starts with ten units and a capacity of ten.
+        event_inventory_by_type = {
+            BusinessType.KIRANA: {
+                "rice": {"name": "Rice (1kg)", "cost": 40.0, "price": 50.0},
+                "dal": {"name": "Dal (1kg)", "cost": 80.0, "price": 100.0},
+                "milk": {"name": "Milk (1L)", "cost": 50.0, "price": 60.0},
+                "bread": {"name": "Bread", "cost": 25.0, "price": 35.0},
+            },
+            BusinessType.PIZZA: {
+                "margherita": {"name": "Margherita Pizza", "cost": 120.0, "price": 250.0},
+                "pepperoni": {"name": "Pepperoni Pizza", "cost": 180.0, "price": 350.0},
+                "garlic_bread": {"name": "Garlic Bread", "cost": 50.0, "price": 120.0},
+                "cola": {"name": "Cola (500ml)", "cost": 30.0, "price": 60.0},
+            },
+            BusinessType.CAFE: {
+                "espresso": {"name": "Espresso", "cost": 40.0, "price": 120.0},
+                "cappuccino": {"name": "Cappuccino", "cost": 60.0, "price": 180.0},
+                "croissant": {"name": "Butter Croissant", "cost": 45.0, "price": 110.0},
+                "muffin": {"name": "Blueberry Muffin", "cost": 50.0, "price": 130.0},
+            },
+            BusinessType.RESTAURANT: {
+                "tomato": {"name": "Tomato", "cost": 20.0, "price": 40.0},
+                "onion": {"name": "Onion", "cost": 18.0, "price": 35.0},
+                "lettuce": {"name": "Lettuce", "cost": 22.0, "price": 45.0},
+                "flour": {"name": "Flour", "cost": 25.0, "price": 50.0},
+            },
+        }
+
+        event_inventory = event_inventory_by_type[business_type]
+        event_business.inventory = {
+            item_key: {
+                **item,
+                "stock": 10,
+                "max_stock": 10,
+                "total_sold": 0,
             }
+            for item_key, item in event_inventory.items()
+        }
         
         player.businesses.append(event_business)
         player.stats.businesses_owned += 1

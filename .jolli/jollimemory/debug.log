@@ -3608,3 +3608,180 @@
 [2026-10-17T08:45:23.968Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
 [2026-10-17T09:33:42.563Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
 [2026-10-17T09:33:44.168Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T09:33:48.924Z] INFO  [PrepareMsgHook] === Prepare-commit-msg hook started (source: message) ===
+[2026-10-17T09:33:48.931Z] INFO  [RepoProfile] manual-disable read → false (by=manuallyDisabled, pid=57562, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-17T09:33:48.942Z] INFO  [PrepareMsgHook] === Prepare-commit-msg hook finished ===
+[2026-10-17T09:33:49.077Z] INFO  [RepoProfile] [trace=66109d89e837f628690af7d1d3ac24a3] manual-disable read → false (by=manuallyDisabled, pid=57569, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-17T09:33:49.087Z] INFO  [PostCommitHook] [trace=66109d89e837f628690af7d1d3ac24a3] Detected operation: commit
+[2026-10-17T09:33:49.103Z] INFO  [PostCommitHook] [trace=66109d89e837f628690af7d1d3ac24a3] Enqueued: type=commit hash=da3439f7
+[2026-10-17T09:33:49.103Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Launching background worker
+[2026-10-17T09:33:49.104Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Background worker spawned (PID: 57580)
+[2026-10-17T09:33:49.106Z] INFO  [EnsureGlobalDaemon] [trace=66109d89e837f628690af7d1d3ac24a3] spawned global daemon ensure helper (pid 57581)
+[2026-10-17T09:33:49.220Z] INFO  [RepoProfile] [trace=66109d89e837f628690af7d1d3ac24a3] manual-disable read → false (by=manuallyDisabled, pid=57580, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-17T09:33:49.271Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] === Queue worker started === node=24.13.0 kind=vscode-plugin source=vscode pkgVer=0.99.18 cliVer=0.99.18 dist=/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.18/dist
+[2026-10-17T09:33:49.279Z] INFO  [StorageFactory] [trace=66109d89e837f628690af7d1d3ac24a3] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-17T09:33:49.343Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Processing queue entry: type=commit hash=da3439f7
+[2026-10-17T09:33:49.353Z] INFO  [GitOps] [trace=66109d89e837f628690af7d1d3ac24a3] Commit da3439f7: added common time endpint for trucks
+[2026-10-17T09:33:49.354Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Commit: da3439f7 - added common time endpint for trucks (8ms)
+[2026-10-17T09:33:49.392Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Discovered 3 Cline CLI session(s)
+[2026-10-17T09:33:49.492Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Transcript source: session=1792162687388_4kl1h, lines=0→264, entries=68
+[2026-10-17T09:33:49.531Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Git diff: 9 files changed, +389 -6 (39ms)
+[2026-10-17T09:33:49.549Z] INFO  [TranscriptReader] [trace=66109d89e837f628690af7d1d3ac24a3] Conversation budget reached: kept 53/68 transcript entries (~101589/150000 chars); older turns dropped
+[2026-10-17T09:33:49.574Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Prompt blocks: plans=0 notes=0 references=0 (+0 track-only archived, not prompted) (AI soft-excluded 0)
+[2026-10-17T09:33:49.574Z] INFO  [Summarizer] [trace=66109d89e837f628690af7d1d3ac24a3] Generating summary for commit da3439f7
+[2026-10-17T09:33:49.574Z] INFO  [Summarizer] [trace=66109d89e837f628690af7d1d3ac24a3] Context: transcript=68, files=9, lines=389+6
+[2026-10-17T09:33:49.574Z] WARN  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] First API attempt failed: No LLM provider available. Set an Anthropic API key (ANTHROPIC_API_KEY) or configure a Jolli Space API key (jolliApiKey).. Retrying in 2000ms...
+[2026-10-17T09:33:51.470Z] INFO  [PrePushHook] [trace=63aa335276db707adc7d1722910fec72] pre-push hook: remote=origin budget=3000ms
+[2026-10-17T09:33:51.473Z] INFO  [RepoProfile] [trace=63aa335276db707adc7d1722910fec72] manual-disable read → false (by=manuallyDisabled, pid=57669, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-17T09:33:51.486Z] INFO  [PushPendingStore] [trace=63aa335276db707adc7d1722910fec72] Enqueued 1 new push-pending entries (branch=main)
+[2026-10-17T09:33:51.487Z] INFO  [PrePushHook] [trace=63aa335276db707adc7d1722910fec72] pre-push: recorded 1 commit(s) across 1 pushed ref(s)
+[2026-10-17T09:33:51.494Z] INFO  [PrePushHook] [trace=63aa335276db707adc7d1722910fec72] Recorded 1 commit(s) for later sync — not signed in to Jolli
+[2026-10-17T09:33:51.517Z] INFO  [StorageFactory] [trace=63aa335276db707adc7d1722910fec72] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-17T09:33:51.575Z] INFO  [Summarizer] [trace=66109d89e837f628690af7d1d3ac24a3] Generating summary for commit da3439f7
+[2026-10-17T09:33:51.575Z] INFO  [Summarizer] [trace=66109d89e837f628690af7d1d3ac24a3] Context: transcript=68, files=9, lines=389+6
+[2026-10-17T09:33:51.576Z] ERROR [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] API call failed after retry: No LLM provider available. Set an Anthropic API key (ANTHROPIC_API_KEY) or configure a Jolli Space API key (jolliApiKey).
+[2026-10-17T09:33:51.577Z] WARN  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Saving summary with empty topics + llm-failed marker for commit da3439f7
+[2026-10-17T09:33:51.577Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] API summary generated (2.0s)
+[2026-10-17T09:33:51.578Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Plan registry scan: found 0 uncommitted slug(s) on main: []
+[2026-10-17T09:33:51.578Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Plan association: detected 0 slug(s) from transcripts: []
+[2026-10-17T09:33:51.578Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Note registry scan: found 0 uncommitted note(s) on main: []
+[2026-10-17T09:33:51.578Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Note association: detected 0 note(s): []
+[2026-10-17T09:33:51.578Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Reference association: detected 0 ref(s) for branch main
+[2026-10-17T09:33:51.580Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Summary built for da3439f7: recap=no, topics=0, plans=absent, notes=absent, references=absent
+[2026-10-17T09:33:51.661Z] INFO  [MetadataManager] [trace=66109d89e837f628690af7d1d3ac24a3] Manifest updated: main/added-common-time-endpint-for-trucks-da3439f7.md (commit)
+[2026-10-17T09:33:51.661Z] INFO  [FolderStorage] [trace=66109d89e837f628690af7d1d3ac24a3] Markdown generated: main/added-common-time-endpint-for-trucks-da3439f7.md
+[2026-10-17T09:33:51.666Z] INFO  [FolderStorage] [trace=66109d89e837f628690af7d1d3ac24a3] Wrote 4 files, deleted 0 (Add summary for da3439f7: added common time endpint for trucks)
+[2026-10-17T09:33:51.666Z] INFO  [SummaryStore] [trace=66109d89e837f628690af7d1d3ac24a3] Summary stored successfully for commit da3439f7
+[2026-10-17T09:33:51.672Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Summary stored successfully for commit da3439f7 (92ms, 0 plans, 0 notes, 0 references)
+[2026-10-17T09:33:51.672Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] === Pipeline completed in 2.3s ===
+[2026-10-17T09:33:51.672Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] === Summary content (0 topics) ===
+[2026-10-17T09:33:51.676Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] Processed 1 queue entries
+[2026-10-17T09:33:51.677Z] INFO  [PushExecutor] [trace=66109d89e837f628690af7d1d3ac24a3] Post-queue push trigger: scheduling drain for 1 newly generated summar(ies)
+[2026-10-17T09:33:51.680Z] INFO  [PushExecutor] [trace=66109d89e837f628690af7d1d3ac24a3] processPushPending(post-queue): 11 pending entr(ies) (filtered to 1 hash(es))
+[2026-10-17T09:33:51.691Z] INFO  [PushExecutor] [trace=66109d89e837f628690af7d1d3ac24a3] processPushPending(post-queue): not signed in — keeping 11 entries for later
+[2026-10-17T09:33:51.723Z] INFO  [GitOps] [trace=66109d89e837f628690af7d1d3ac24a3] Commit da3439f7: added common time endpint for trucks
+[2026-10-17T09:33:51.789Z] INFO  [StorageFactory] [trace=66109d89e837f628690af7d1d3ac24a3] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-17T09:33:51.849Z] INFO  [QueueWorker] [trace=66109d89e837f628690af7d1d3ac24a3] === Queue worker finished ===
+[2026-10-17T09:33:51.851Z] INFO  [SessionStartHook] [trace=66109d89e837f628690af7d1d3ac24a3] Briefing cache not warmed — nothing to brief on this branch
+[2026-10-17T09:33:51.877Z] INFO  [SessionSync] [trace=66109d89e837f628690af7d1d3ac24a3] session sync: not uploading — no API key configured
+[2026-10-17T09:33:52.050Z] INFO  [PlanService] detectPlans found 0 plans (0 in registry)
+[2026-10-17T09:33:52.050Z] INFO  [NoteService] detectNotes found 0 notes (0 in registry)
+[2026-10-17T09:33:52.050Z] INFO  [references] detectReferences(*) found 0 (0 in registry)
+[2026-10-17T09:33:52.051Z] INFO  [SkillProjection] projectActiveSkills: 0 active (0 in registry)
+[2026-10-17T09:35:51.597Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T09:45:21.380Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T09:45:54.204Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T09:50:21.429Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T11:05:23.820Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T11:56:34.024Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T12:57:34.315Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T13:58:35.370Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T14:59:36.328Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T16:00:31.516Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T17:01:32.227Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T18:02:33.281Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T19:03:34.320Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T20:04:35.056Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T21:05:37.138Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T22:06:09.294Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-17T23:24:53.359Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T00:08:50.794Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T01:09:35.142Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T02:42:39.500Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T03:43:54.761Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T04:29:52.532Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T06:31:11.615Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T07:32:37.629Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T08:33:30.560Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T09:34:09.455Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T10:35:37.512Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T11:08:36.171Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T11:09:05.516Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T11:35:35.669Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T12:16:14.139Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T12:19:05.904Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T12:32:59.691Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T12:34:06.068Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T12:35:36.094Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T13:23:21.800Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T13:23:22.412Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-18T13:24:39.984Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-19T04:34:40.664Z] INFO  [activate] Activating JolliMemory extension {"workspaceRoot":"/Users/adarsh/AI_Business_Tycoon_BE","extensionPath":"/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.18"}
+[2026-10-19T04:34:40.947Z] INFO  [initialLoad] Loading all panels
+[2026-10-19T04:34:41.570Z] INFO  [RepoProfile] manual-disable read → false (by=manuallyDisabled, pid=1172, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-19T04:34:41.810Z] INFO  [PlanService] detectPlans found 0 plans (0 in registry)
+[2026-10-19T04:34:41.811Z] INFO  [NoteService] detectNotes found 0 notes (0 in registry)
+[2026-10-19T04:34:41.811Z] INFO  [references] detectReferences(*) found 0 (0 in registry)
+[2026-10-19T04:34:41.811Z] INFO  [SkillProjection] projectActiveSkills: 0 active (0 in registry)
+[2026-10-19T04:34:43.439Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-19T04:34:43.882Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-19T04:34:43.882Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-19T04:34:44.192Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-19T04:34:44.495Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-19T04:34:45.017Z] INFO  [activate] Schema v5 migration already complete — skipping (no UI toggle)
+[2026-10-19T04:34:46.111Z] INFO  [MigrationEngine] 0.99.2 head-regen already completed at 2026-09-18T10:32:10.243Z — skipping phase 1
+[2026-10-19T04:34:46.111Z] INFO  [MigrationEngine] Stale-child sweep: deleted=0 failed=0
+[2026-10-19T04:34:46.112Z] INFO  [activate] KB stale-child reconcile: swept=0 completedAt=2026-09-18T10:32:10.243Z
+[2026-10-19T04:34:46.289Z] INFO  [RepoProfile] [trace=1a924f3f494418d4e6b98b0245b81149] manual-disable read → false (by=manuallyDisabled, pid=2151, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-19T04:34:46.290Z] INFO  [PrePushWorker] [trace=1a924f3f494418d4e6b98b0245b81149] PrePushWorker(vscode-activation): spawned compensation drain starting
+[2026-10-19T04:34:46.292Z] INFO  [PushExecutor] [trace=1a924f3f494418d4e6b98b0245b81149] processPushPending(activation): 11 pending entr(ies)
+[2026-10-19T04:34:46.341Z] INFO  [PushExecutor] [trace=1a924f3f494418d4e6b98b0245b81149] processPushPending(activation): not signed in — keeping 11 entries for later
+[2026-10-19T04:34:46.341Z] INFO  [PrePushWorker] [trace=1a924f3f494418d4e6b98b0245b81149] PrePushWorker(vscode-activation): drain done — attempted=0 pushed=0 failed=0 (not signed in)
+[2026-10-19T04:34:48.378Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-19T04:34:48.423Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-19T04:34:48.455Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-19T04:35:01.675Z] INFO  [initialLoad] All panels loaded — updating status bar
+[2026-10-19T04:35:01.676Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-19T04:35:08.514Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-19T04:35:08.517Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-19T04:35:08.689Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-19T04:35:08.785Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-19T04:35:09.720Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-19T04:35:15.595Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=1, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-21T14:43:22.213Z] INFO  [activate] Activating JolliMemory extension {"workspaceRoot":"/Users/adarsh/AI_Business_Tycoon_BE","extensionPath":"/Users/adarsh/.vscode/extensions/jolli.jollimemory-vscode-0.99.18"}
+[2026-10-21T14:43:22.390Z] INFO  [initialLoad] Loading all panels
+[2026-10-21T14:43:23.292Z] INFO  [RepoProfile] manual-disable read → false (by=manuallyDisabled, pid=28140, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-21T14:43:24.297Z] INFO  [PlanService] detectPlans found 0 plans (0 in registry)
+[2026-10-21T14:43:24.297Z] INFO  [NoteService] detectNotes found 0 notes (0 in registry)
+[2026-10-21T14:43:24.297Z] INFO  [references] detectReferences(*) found 0 (0 in registry)
+[2026-10-21T14:43:24.297Z] INFO  [SkillProjection] projectActiveSkills: 0 active (0 in registry)
+[2026-10-21T14:43:24.863Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-21T14:43:25.135Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-21T14:43:25.135Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-21T14:43:25.236Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T14:43:25.286Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-21T14:43:25.610Z] INFO  [activate] Schema v5 migration already complete — skipping (no UI toggle)
+[2026-10-21T14:43:25.923Z] INFO  [MigrationEngine] 0.99.2 head-regen already completed at 2026-09-18T10:32:10.243Z — skipping phase 1
+[2026-10-21T14:43:25.923Z] INFO  [MigrationEngine] Stale-child sweep: deleted=0 failed=0
+[2026-10-21T14:43:25.924Z] INFO  [activate] KB stale-child reconcile: swept=0 completedAt=2026-09-18T10:32:10.243Z
+[2026-10-21T14:43:26.366Z] INFO  [RepoProfile] [trace=be5cc654385c2bc646261824761370a6] manual-disable read → false (by=manuallyDisabled, pid=28862, cwd=/Users/adarsh/AI_Business_Tycoon_BE, profile=/Users/adarsh/AI_Business_Tycoon_BE/.jolli/jollimemory/profile.json, raw: userDisabled=undefined manuallyDisabled=false fence=2026-09-17T14:53:24.180Z)
+[2026-10-21T14:43:26.367Z] INFO  [PrePushWorker] [trace=be5cc654385c2bc646261824761370a6] PrePushWorker(vscode-activation): spawned compensation drain starting
+[2026-10-21T14:43:26.445Z] INFO  [PushPendingStore] [trace=be5cc654385c2bc646261824761370a6] Pruned 7 stale push-pending entries (>168h old)
+[2026-10-21T14:43:26.447Z] INFO  [PushExecutor] [trace=be5cc654385c2bc646261824761370a6] processPushPending(activation): 4 pending entr(ies)
+[2026-10-21T14:43:26.495Z] INFO  [PushExecutor] [trace=be5cc654385c2bc646261824761370a6] processPushPending(activation): not signed in — keeping 4 entries for later
+[2026-10-21T14:43:26.495Z] INFO  [PrePushWorker] [trace=be5cc654385c2bc646261824761370a6] PrePushWorker(vscode-activation): drain done — attempted=0 pushed=0 failed=0 (not signed in)
+[2026-10-21T14:43:27.206Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=0, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-21T14:43:27.213Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-21T14:43:27.267Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=0, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-21T14:43:27.271Z] INFO  [initialLoad] All panels loaded — updating status bar
+[2026-10-21T14:43:27.271Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-21T14:43:27.840Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=0, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-21T14:43:27.841Z] INFO  [Installer] Checking Jolli Memory status
+[2026-10-21T14:43:27.997Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=0, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-21T14:43:28.046Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-21T14:43:31.534Z] INFO  [StorageFactory] StorageFactory.create: route=cutover, projectPath=/Users/adarsh/AI_Business_Tycoon_BE
+[2026-10-21T14:43:32.686Z] INFO  [Installer] Status: enabled=true, claude=true, git=true, geminiHook=true, hermesHook=false, worktreeHooks=true, sessions=0, summaries=36, codex=false/undefined, gemini=true/true, enabledWorktrees=1, opencode=false/undefined, cursor=true/true, copilot=false/true, copilotChat=true, cline=true/true
+[2026-10-21T14:56:00.778Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T16:07:57.023Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T17:38:17.747Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T18:36:38.748Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T19:35:26.834Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T21:00:16.049Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T22:16:13.751Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-21T23:16:40.809Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-22T00:51:41.146Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-22T02:08:34.370Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-22T02:50:16.169Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-22T03:21:20.610Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-22T04:21:08.094Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
+[2026-10-22T05:21:27.499Z] INFO  [bridge] Merged mode activated {"branch":"main","creationPoint":"94c9ca19","author":"Adarsh"}
