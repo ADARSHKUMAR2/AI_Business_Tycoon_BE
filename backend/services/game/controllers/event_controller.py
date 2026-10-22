@@ -1,72 +1,93 @@
 from datetime import datetime, timedelta
-from typing import Optional, List
-from services.game.models.events import FranchiseEvent, EventStatus, EventCreate, EventResponse
+from typing import Optional
+
+from services.game.models.events import (
+    FranchiseEvent,
+    EventStatus,
+    EventCreate,
+    EventResponse,
+)
 from services.game.models.business import Business, BusinessType
 from services.game.models.land import LandType
 from services.game.utils.state_manager import state_manager
-from shared.exceptions import BusinessTycoonException, NotFoundError, InvalidOperationError
+from shared.exceptions import NotFoundError, InvalidOperationError
+
 
 class EventController:
     @staticmethod
     async def create_event(data: EventCreate) -> FranchiseEvent:
         """Admin: Create a new franchise tournament event."""
-        # Check if there is already an active or upcoming event
-        existing = await FranchiseEvent.find_one({"status": {"$in": [EventStatus.UPCOMING, EventStatus.ACTIVE]}})
+        existing = await FranchiseEvent.find_one(
+            {"status": {"$in": [EventStatus.UPCOMING, EventStatus.ACTIVE]}}
+        )
         if existing:
-            raise InvalidOperationError(f"An event is already {existing.status.value}: {existing.franchise_name}")
+            raise InvalidOperationError(
+                f"An event is already {existing.status.value}: "
+                f"{existing.franchise_name}"
+            )
 
         now = datetime.utcnow()
         event = FranchiseEvent(
             franchise_name=data.franchise_name,
             status=EventStatus.UPCOMING,
-            start_time=now, # In a real system, you might schedule this for the future
+            start_time=now,
             end_time=now + timedelta(minutes=data.duration_minutes),
             entry_fee=data.entry_fee,
             max_winners=data.max_winners,
-            participants={}
+            participants={},
         )
         await event.save()
         return event
 
     @staticmethod
-    async def get_active_event(player_id: str = None) -> Optional[EventResponse]:
-        """Get the currently active, upcoming, or recently completed event (grace period)."""
+    async def get_active_event(
+        player_id: str = None,
+    ) -> Optional[EventResponse]:
+        """Get the current or recently completed franchise event."""
         now = datetime.utcnow()
-        # Find active/upcoming OR recently completed events (within last 24 hours)
         grace_period_cutoff = now - timedelta(hours=24)
-        
-        # Priority 1: Active or Upcoming
-        event = await FranchiseEvent.find_one({"status": {"$in": [EventStatus.UPCOMING, EventStatus.ACTIVE]}})
-        
-        # Priority 2: Recently Completed (if no active/upcoming)
+
+        event = await FranchiseEvent.find_one(
+            {
+                "status": {
+                    "$in": [
+                        EventStatus.UPCOMING,
+                        EventStatus.ACTIVE,
+                    ]
+                }
+            }
+        )
+
         if not event:
             event = await FranchiseEvent.find_one(
-                {"status": EventStatus.COMPLETED, "end_time": {"$gte": grace_period_cutoff}},
-                sort=[("end_time", -1)] # Get the most recent one
+                {
+                    "status": EventStatus.COMPLETED,
+                    "end_time": {"$gte": grace_period_cutoff},
+                },
+                sort=[("end_time", -1)],
             )
-            
+
         if not event:
             return None
-            
-        # Auto-update status if time has passed
+
         if event.status == EventStatus.UPCOMING and now >= event.start_time:
-            if now >= event.end_time:
-                event.status = EventStatus.COMPLETED
-            else:
-                event.status = EventStatus.ACTIVE
+            event.status = (
+                EventStatus.COMPLETED
+                if now >= event.end_time
+                else EventStatus.ACTIVE
+            )
             await event.save()
         elif event.status == EventStatus.ACTIVE and now >= event.end_time:
             event.status = EventStatus.COMPLETED
             await event.save()
-            
-        # If it just completed (or was already completed), ensure it's resolved
+
         if event.status == EventStatus.COMPLETED and not event.resolved:
             await EventController.resolve_event(event)
-            
-        is_reg = False
-        if player_id and player_id in event.participants:
-            is_reg = True
-            
+
+        is_registered = bool(
+            player_id and player_id in event.participants
+        )
+
         return EventResponse(
             event_id=event.event_id,
             franchise_name=event.franchise_name,
@@ -75,139 +96,214 @@ class EventController:
             end_time=event.end_time,
             entry_fee=event.entry_fee,
             max_winners=event.max_winners,
-            is_registered=is_reg,
+            is_registered=is_registered,
             participant_count=len(event.participants),
-            winners=event.winners
+            winners=event.winners,
         )
 
     @staticmethod
-    async def register_player(event_id: str, player_id: str) -> EventResponse:
-        """Register a player for an event, deducting the entry fee."""
+    async def register_player(
+        event_id: str,
+        player_id: str,
+    ) -> EventResponse:
+        """Register a player for an event and deduct the entry fee."""
         event = await FranchiseEvent.find_one({"event_id": event_id})
         if not event:
             raise NotFoundError("Event", event_id)
-            
+
         if event.status == EventStatus.COMPLETED:
             raise InvalidOperationError("This event has already ended.")
-            
+
         if player_id in event.participants:
-            raise InvalidOperationError("Player is already registered for this event.")
-            
+            raise InvalidOperationError(
+                "Player is already registered for this event."
+            )
+
         player = await state_manager.load_player(player_id)
-        
+
         if not player.deduct_money(event.entry_fee):
-            raise InvalidOperationError(f"Insufficient funds. Entry fee is ₹{event.entry_fee}")
-            
-        # Add to participants with 0 starting revenue
+            raise InvalidOperationError(
+                f"Insufficient funds. Entry fee is ₹{event.entry_fee}"
+            )
+
         event.participants[player_id] = 0.0
-        
+
         await state_manager.save_player(player)
         await event.save()
-        
+
         return await EventController.get_active_event(player_id)
-    
+
     @staticmethod
     async def resolve_event(event: FranchiseEvent) -> None:
-        """Process an ended event: turn winners' temporary stores into permanent ones, delete losers' temporary stores."""
+        """
+        Turn winners' temporary stores into permanent businesses and remove
+        losing event businesses.
+        """
         if event.resolved:
             return
-            
-        # 1. Sort participants by revenue descending
-        sorted_participants = sorted(event.participants.items(), key=lambda item: item[1], reverse=True)
 
-        # Filter out participants who earned 0 revenue
-        eligible_participants = [p for p in sorted_participants if p[1] > 0]
+        sorted_participants = sorted(
+            event.participants.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )
 
-        # 2. Identify winners from the eligible pool
-        winners = [p[0] for p in eligible_participants[:event.max_winners]]
-        
-        # Save winners list to the event document
+        eligible_participants = [
+            participant
+            for participant in sorted_participants
+            if participant[1] > 0
+        ]
+
+        winners = [
+            player_id
+            for player_id, _ in eligible_participants[: event.max_winners]
+        ]
         event.winners = winners
-        
-        # 3. Process all participants
+
         for player_id in event.participants.keys():
             try:
                 player = await state_manager.load_player(player_id)
                 businesses_to_keep = []
                 player_updated = False
-                
-                for biz in player.businesses:
-                    if biz.is_event_business and biz.event_id == event.event_id:
-                        player_updated = True
+
+                for business in player.businesses:
+                    is_this_event_business = (
+                        business.is_event_business
+                        and business.event_id == event.event_id
+                    )
+
+                    if not is_this_event_business:
+                        businesses_to_keep.append(business)
+                        continue
+
+                    player_updated = True
+
+                    for tile in player.land_tiles:
+                        same_position = (
+                            tile.position.x == business.position_x
+                            and tile.position.y == business.position_y
+                        )
+
+                        if not same_position:
+                            continue
+
                         if player_id in winners:
-                            # WINNER: Store becomes permanent
-                            biz.is_event_business = False
-                            biz.event_id = None
-                            biz.name = f"{event.franchise_name} (Won!)"
-                            # Store stays exactly where the player placed it on their grid.
-                            businesses_to_keep.append(biz)
+                            tile.tile_type = LandType.SHOP
+                            tile.business_id = business.business_id
                         else:
-                            # LOSER: Store is deleted
-                            pass # We simply don't add it to businesses_to_keep
-                    else:
-                        # Keep all normal businesses and businesses from other events
-                        businesses_to_keep.append(biz)
-                
+                            tile.tile_type = LandType.EMPTY
+                            tile.business_id = None
+
+                        break
+
+                    if player_id in winners:
+                        business.is_event_business = False
+                        business.event_id = None
+                        business.name = f"{event.franchise_name} (Won!)"
+                        businesses_to_keep.append(business)
+
                 if player_updated:
                     player.businesses = businesses_to_keep
                     await state_manager.save_player(player)
-            except Exception as e:
-                # Log error but continue processing other players
-                print(f"Error resolving event {event.event_id} for player {player_id}: {e}")
-                
-        # 4. Mark as resolved
+
+            except Exception as error:
+                print(
+                    f"Error resolving event {event.event_id} "
+                    f"for player {player_id}: {error}"
+                )
+
         event.resolved = True
         await event.save()
 
     @staticmethod
-    async def create_event_business(event_id: str, player_id: str, position_x: int, position_y: int) -> Business:
-        """Create a temporary franchise business for a player in an event."""
+    async def create_event_business(
+        event_id: str,
+        player_id: str,
+        position_x: int,
+        position_y: int,
+    ) -> Business:
+        """Create a temporary franchise business on an owned land tile."""
         event = await FranchiseEvent.find_one({"event_id": event_id})
         if not event:
             raise NotFoundError("Event", event_id)
-        
+
         if event.status == EventStatus.COMPLETED:
-            raise InvalidOperationError("Cannot create business for completed event.")
-        
+            raise InvalidOperationError(
+                "Cannot create business for completed event."
+            )
+
         if player_id not in event.participants:
-            raise InvalidOperationError("Player must be registered for the event first.")
-        
+            raise InvalidOperationError(
+                "Player must be registered for the event first."
+            )
+
         player = await state_manager.load_player(player_id)
-        
-        # CLEANUP: Remove any OLD dead event businesses the player might have stuck in their DB
-        # from events that failed to resolve properly or were deleted.
+
+        existing_business = next(
+            (
+                business
+                for business in player.businesses
+                if business.position_x == position_x
+                and business.position_y == position_y
+            ),
+            None,
+        )
+
+        if existing_business is not None:
+            raise InvalidOperationError(
+                f"Tile ({position_x}, {position_y}) is already occupied by "
+                f"'{existing_business.name}'. Choose an empty tile for your "
+                "event store."
+            )
+
+        selected_tile = next(
+            (
+                tile
+                for tile in player.land_tiles
+                if tile.position.x == position_x
+                and tile.position.y == position_y
+            ),
+            None,
+        )
+
+        if selected_tile is None:
+            raise InvalidOperationError(
+                f"Tile ({position_x}, {position_y}) is not owned by this player."
+            )
+
+        if (
+            selected_tile.tile_type == LandType.SHOP
+            or selected_tile.business_id
+        ):
+            raise InvalidOperationError(
+                f"Tile ({position_x}, {position_y}) is already occupied."
+            )
+
+        # Remove stale event businesses from older events. Preserve normal
+        # businesses and the current event business if it already exists.
         cleaned_businesses = []
-        for biz in player.businesses:
-            if biz.is_event_business:
-                if biz.event_id == event_id:
-                    return biz  # Already has business for THIS event, return it
-                else:
-                    # This is an old dead event business. Skip it (delete it).
-                    pass
-            else:
-                cleaned_businesses.append(biz)
-        
+
+        for business in player.businesses:
+            if business.is_event_business:
+                if business.event_id == event_id:
+                    return business
+
+                continue
+
+            cleaned_businesses.append(business)
+
         player.businesses = cleaned_businesses
-        
-        # Determine business type based on franchise name
 
-        business_type = BusinessType.CAFE  # Default for Starbucks
-        if "pizza" in event.franchise_name.lower():
+        franchise_name = event.franchise_name.lower()
+        business_type = BusinessType.CAFE
+
+        if "pizza" in franchise_name:
             business_type = BusinessType.PIZZA
-        elif "restaurant" in event.franchise_name.lower():
+        elif "restaurant" in franchise_name:
             business_type = BusinessType.RESTAURANT
-        elif "kirana" in event.franchise_name.lower():
+        elif "kirana" in franchise_name:
             business_type = BusinessType.KIRANA
-        
-        # Validate the chosen tile is empty (no existing business on it)
-        for biz in player.businesses:
-            if biz.position_x == position_x and biz.position_y == position_y:
-                raise InvalidOperationError(
-                    f"Tile ({position_x}, {position_y}) is already occupied by '{biz.name}'. "
-                    "Choose an empty tile for your event store."
-                )
 
-        # Create event business at the player-chosen grid tile
         event_business = Business(
             player_id=player_id,
             business_type=business_type,
@@ -220,33 +316,95 @@ class EventController:
             employees=[],
             is_open=True,
         )
-        
-        # Event businesses use four products for their business type.
-        # Every event item starts with ten units and a capacity of ten.
+
         event_inventory_by_type = {
             BusinessType.KIRANA: {
-                "rice": {"name": "Rice (1kg)", "cost": 40.0, "price": 50.0},
-                "dal": {"name": "Dal (1kg)", "cost": 80.0, "price": 100.0},
-                "milk": {"name": "Milk (1L)", "cost": 50.0, "price": 60.0},
-                "bread": {"name": "Bread", "cost": 25.0, "price": 35.0},
+                "rice": {
+                    "name": "Rice (1kg)",
+                    "cost": 40.0,
+                    "price": 50.0,
+                },
+                "dal": {
+                    "name": "Dal (1kg)",
+                    "cost": 80.0,
+                    "price": 100.0,
+                },
+                "milk": {
+                    "name": "Milk (1L)",
+                    "cost": 50.0,
+                    "price": 60.0,
+                },
+                "bread": {
+                    "name": "Bread",
+                    "cost": 25.0,
+                    "price": 35.0,
+                },
             },
             BusinessType.PIZZA: {
-                "margherita": {"name": "Margherita Pizza", "cost": 120.0, "price": 250.0},
-                "pepperoni": {"name": "Pepperoni Pizza", "cost": 180.0, "price": 350.0},
-                "garlic_bread": {"name": "Garlic Bread", "cost": 50.0, "price": 120.0},
-                "cola": {"name": "Cola (500ml)", "cost": 30.0, "price": 60.0},
+                "margherita": {
+                    "name": "Margherita Pizza",
+                    "cost": 120.0,
+                    "price": 250.0,
+                },
+                "pepperoni": {
+                    "name": "Pepperoni Pizza",
+                    "cost": 180.0,
+                    "price": 350.0,
+                },
+                "garlic_bread": {
+                    "name": "Garlic Bread",
+                    "cost": 50.0,
+                    "price": 120.0,
+                },
+                "cola": {
+                    "name": "Cola (500ml)",
+                    "cost": 30.0,
+                    "price": 60.0,
+                },
             },
             BusinessType.CAFE: {
-                "espresso": {"name": "Espresso", "cost": 40.0, "price": 120.0},
-                "cappuccino": {"name": "Cappuccino", "cost": 60.0, "price": 180.0},
-                "croissant": {"name": "Butter Croissant", "cost": 45.0, "price": 110.0},
-                "muffin": {"name": "Blueberry Muffin", "cost": 50.0, "price": 130.0},
+                "espresso": {
+                    "name": "Espresso",
+                    "cost": 40.0,
+                    "price": 120.0,
+                },
+                "cappuccino": {
+                    "name": "Cappuccino",
+                    "cost": 60.0,
+                    "price": 180.0,
+                },
+                "croissant": {
+                    "name": "Butter Croissant",
+                    "cost": 45.0,
+                    "price": 110.0,
+                },
+                "muffin": {
+                    "name": "Blueberry Muffin",
+                    "cost": 50.0,
+                    "price": 130.0,
+                },
             },
             BusinessType.RESTAURANT: {
-                "tomato": {"name": "Tomato", "cost": 20.0, "price": 40.0},
-                "onion": {"name": "Onion", "cost": 18.0, "price": 35.0},
-                "lettuce": {"name": "Lettuce", "cost": 22.0, "price": 45.0},
-                "flour": {"name": "Flour", "cost": 25.0, "price": 50.0},
+                "tomato": {
+                    "name": "Tomato",
+                    "cost": 20.0,
+                    "price": 40.0,
+                },
+                "onion": {
+                    "name": "Onion",
+                    "cost": 18.0,
+                    "price": 35.0,
+                },
+                "lettuce": {
+                    "name": "Lettuce",
+                    "cost": 22.0,
+                    "price": 45.0,
+                },
+                "flour": {
+                    "name": "Flour",
+                    "cost": 25.0,
+                    "price": 50.0,
+                },
             },
         }
 
@@ -261,15 +419,12 @@ class EventController:
             for item_key, item in event_inventory.items()
         }
 
-        for tile in player.land_tiles:
-            if tile.position.x == position_x and tile.position.y == position_y:
-                tile.tile_type = LandType.SHOP
-                tile.business_id = event_business.business_id
-                break
-        
+        selected_tile.tile_type = LandType.SHOP
+        selected_tile.business_id = event_business.business_id
+
         player.businesses.append(event_business)
         player.stats.businesses_owned += 1
-        
+
         await state_manager.save_player(player)
-        
+
         return event_business
