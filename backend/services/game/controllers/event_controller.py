@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional, List
 from services.game.models.events import FranchiseEvent, EventStatus, EventCreate, EventResponse
 from services.game.models.business import Business, BusinessType
+from services.game.models.land import LandType
 from services.game.utils.state_manager import state_manager
 from shared.exceptions import BusinessTycoonException, NotFoundError, InvalidOperationError
 
@@ -259,6 +260,12 @@ class EventController:
             }
             for item_key, item in event_inventory.items()
         }
+
+        for tile in player.land_tiles:
+            if tile.position.x == position_x and tile.position.y == position_y:
+                tile.tile_type = LandType.SHOP
+                tile.business_id = event_business.business_id
+                break
         
         player.businesses.append(event_business)
         player.stats.businesses_owned += 1
