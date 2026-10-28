@@ -18,6 +18,15 @@ from services.game.models.events import FranchiseEvent, EventStatus
 class BusinessController:
     """Controller for business-related logic."""
 
+    RESTAURANT_PLOT_INGREDIENTS = {
+        "tomato",
+        "onion",
+        "lettuce",
+        "herb",
+        "flour",
+        "rice",
+    }
+
     # ──────────────────────────────────────────────────────────────────
     # Internal helpers
     # ──────────────────────────────────────────────────────────────────
@@ -69,7 +78,16 @@ class BusinessController:
 
         # Convert dict template → InventoryItem objects
         inventory_items = {
-            key: InventoryItem(**item_data)
+            key: InventoryItem(
+                **item_data,
+                has_supply_zone=(
+                    item_data.get("has_supply_zone", True)
+                    and not (
+                        data.business_type == BusinessType.RESTAURANT
+                        and key.lower() in BusinessController.RESTAURANT_PLOT_INGREDIENTS
+                    )
+                ),
+            )
             for key, item_data in inventory_source.items()
         }
 
